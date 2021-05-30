@@ -5,6 +5,8 @@ use App\Http\Controllers\CategoriasController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MovimientosController;
+use App\Http\Controllers\ProductosController;
+use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\UnidadesController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -51,3 +53,11 @@ Route::post('/unidades/actualizar', [UnidadesController::class, 'update'])->name
 Route::get('/clientes', [ClientesController::class, 'index'])->name('clientes.index');
 Route::post('/clientes/guardar', [ClientesController::class, 'store'])->name('clientes.store');
 Route::post('/clientes/actualizar', [ClientesController::class, 'update'])->name('clientes.update');
+
+Route::get('/productos', [ProductosController::class, 'index'])->name('productos.index');
+Route::post('/productos/guardar', [ProductosController::class, 'store'])->name('productos.store');
+Route::post('/productos/actualizar', [ProductosController::class, 'update'])->name('productos.update');
+
+Route::get('/proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
+Route::post('/proveedores/guardar', [ProveedorController::class, 'store'])->name('proveedores.store');
+Route::post('/proveedores/actualizar', [ProveedorController::class, 'update'])->name('proveedores.update');

@@ -27,7 +27,7 @@
         </el-submenu>
         <el-submenu index="4" style="background-color: #06163A">
           <template #title><b><i class="el-icon-message c-white" style="vertical-align: baseline"></i></b><span class="c-white">Productos</span></template>
-            <inertia-link :href="''">
+            <inertia-link :href="route('productos.index')">
                 <el-menu-item index="5" class="b-primary-l c-white" >
                     <b><i class="el-icon-sort c-white" style="vertical-align: baseline"></i></b>Productos
                 </el-menu-item>
@@ -50,7 +50,7 @@
                     <b><i class="el-icon-sort c-white" style="vertical-align: baseline"></i></b>Ingresos
                 </el-menu-item>
             </inertia-link>
-          <inertia-link :href="''">
+          <inertia-link :href="route('proveedores.index')">
             <el-menu-item index="10" class="b-primary-l c-white">
               <b><i class="el-icon-box c-white" style="vertical-align: baseline"></i></b>Proveedores
             </el-menu-item>
