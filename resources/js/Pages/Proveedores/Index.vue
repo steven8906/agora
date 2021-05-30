@@ -1,5 +1,5 @@
 <template>
-    <app-main selected="10" titulo="Unidades" :usuario="usuario">
+    <app-main selected="10" titulo="Proveedores" :usuario="usuario">
         <el-button-group>
             <el-button type="primary" icon="el-icon-edit" @click="modalForm = true"></el-button>
             <el-button type="primary" icon="el-icon-paperclip"></el-button>
@@ -10,14 +10,19 @@
         <el-row :gutter="20">
             <el-col :span="24">
                 <el-card class="box-card">
-                    <el-table v-if="dataUnidades.length > 0"
+                    <el-table v-if="dataProveedores.length > 0"
                               :data="displayData"
                               stripe
                               border
                               style="width: 100%">
-                        <el-table-column label="Unidad" prop="unidad"></el-table-column>
-                        <el-table-column label="Clave" prop="clave"></el-table-column>
-                        <el-table-column label="Tipo" prop="tipo"></el-table-column>
+                        <el-table-column label="Proveedor" prop="nombre"></el-table-column>
+                        <el-table-column label="Teléfono" prop="telefono"></el-table-column>
+                        <el-table-column label="Email" prop="email"></el-table-column>
+                        <el-table-column label="Contacto" prop="contacto"></el-table-column>
+                        <el-table-column label="Tel. Contacto" prop="telefono_contacto"></el-table-column>
+                        <el-table-column label="Tipo Documento" prop="tipo_documento"></el-table-column>
+                        <el-table-column label="N. Documento" prop="num_documento"></el-table-column>
+                        <el-table-column label="Dirección" prop="direccion"></el-table-column>
                         <el-table-column align="right"
                                          fixed="right"
                                          width="250">
@@ -57,7 +62,7 @@
                             layout="prev, pager, next"
                             @current-change="handleCurrentChange"
                             :page-size="pageSize"
-                            :total="dataUnidades.length">
+                            :total="dataProveedores.length">
                         </el-pagination>
                     </div>
                 </el-card>
@@ -65,23 +70,56 @@
         </el-row>
         <!--        Tabla y paginacion-->
         <!--  Inicio-Formulario de registro y actualizacion-->
-        <el-dialog title="Formulario de Unidades" v-model="modalForm" width="30%">
+        <el-dialog title="Formulario de Proveedores" v-model="modalForm" width="30%">
             <el-form ref="form"  label-width="120px" :model="model">
-                <el-form-item label="Unidad:"
-                              prop="unidad"
+                <el-form-item label="Proveedor"
+                              prop="nombre"
                               :rules="[{required:true, message:'Campo obligatorio'}]">
-                    <el-input placeholder="Unidad" v-model="model.unidad" clearable></el-input>
+                    <el-input placeholder="Proveedor" v-model="model.nombre" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="Clave:"
-                              prop="clave"
-                              :rules="[{required:true, message:'Campo obligatorio'}]">
-                    <el-input placeholder="Clave" v-model="model.clave" clearable></el-input>
+                <el-form-item label="Teléfono:"
+                              prop="telefono"
+                              :rules="[
+                                  {required:true, message:'Campo obligatorio'},
+                                  {type: 'number', message: 'Debe ingresar un teléfono válido', trigger: ['blur', 'change']},
+                                  ]">
+                    <el-input placeholder="Teléfono" v-model.number="model.telefono" clearable></el-input>
                 </el-form-item>
                 <el-form-item
-                    label="Tipo:"
-                    prop="tipo"
-                    :rules="[{required:true, message:'Campo obligatorio'}]">
-                    <el-input v-model="model.tipo" placeholder="Tipo" clearable></el-input>
+                    label="Email"
+                    prop="email"
+                    :rules="[{type: 'email', message: 'Debe ingresar un email válido', trigger: ['blur', 'change'] }]"
+                >
+                    <el-input v-model="model.email" placeholder="Email" clearable></el-input>
+                </el-form-item>
+                <el-form-item label="Contacto:"
+                              prop="contacto"
+                              :rules="[{required:true, message:'Campo obligatorio'}]">
+                    <el-input placeholder="Contacto" v-model="model.contacto" clearable></el-input>
+                </el-form-item>
+                <el-form-item label="Tel. Contacto:"
+                              prop="telefono_contacto"
+                              :rules="[
+                                  {required:true, message:'Campo obligatorio'},
+                                  {type: 'number', message: 'Debe ingresar un teléfono válido', trigger: ['blur', 'change']},
+                              ]">
+                    <el-input placeholder="Tel. Contacto" v-model.number="model.telefono_contacto" clearable></el-input>
+                </el-form-item>
+                <el-form-item label="Tipo Documento" prop="tipo_documento">
+                    <el-select v-model="model.tipo_documento" placeholder="Tipo Documento">
+                        <el-option label="DNI" value="DNI"></el-option>
+                        <el-option label="RUC" value="RUC"></el-option>
+                        <el-option label="PASS" value="PASS"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="N. Documento:"
+                              prop="num_documento"
+                              :rules="[{type: 'number', message: 'Debe ingresar un número de documento válido', trigger: ['blur', 'change'] }]"
+                >
+                    <el-input placeholder="N. Documento" v-model.number="model.num_documento" clearable></el-input>
+                </el-form-item>
+                <el-form-item label="Dirección:">
+                    <el-input placeholder="Dirección" v-model="model.direccion" clearable></el-input>
                 </el-form-item>
             </el-form>
             <error-form :errores="errores"></error-form>
@@ -104,11 +142,11 @@
 
     export default {
         name: "Index",
-        props: ['unidades', 'usuario'],
+        props: ['proveedores', 'usuario'],
         components: {AppMain, ErrorForm, Cargando},
         data() {
             return{
-                dataUnidades: this.unidades,
+                dataProveedores: this.proveedores,
                 modalForm: false,
                 //bloque obligatorio para paginacion de tabla
                 page: 1,
@@ -124,26 +162,26 @@
         },//bloque obligatorio para paginacion de tabla
         computed:{
             displayData() {
-                if (!this.dataUnidades || this.dataUnidades.length === 0) return [];
-                return this.dataUnidades.slice(this.pageSize * this.page - this.pageSize, this.pageSize * this.page)
+                if (!this.dataProveedores || this.dataProveedores.length === 0) return [];
+                return this.dataProveedores.slice(this.pageSize * this.page - this.pageSize, this.pageSize * this.page)
             }
         },
         watch:{
             search: function (val) {
                 if (val !== ""){
-                    this.dataUnidades =  this.dataUnidades.filter(data => !val || data.unidad.toLowerCase().includes(val.toLowerCase()))
+                    this.dataProveedores =  this.dataProveedores.filter(data => !val || data.nombre.toLowerCase().includes(val.toLowerCase()))
                 }else{
-                    this.dataUnidades = this.unidad
+                    this.dataProveedores = this.proveedores
                 }
             }
         },
         methods:{
             guardar() {
                 this.loading = true;
-                let url = this.model.hasOwnProperty('id') ? 'unidades.update' : 'unidades.store';
+                let url = this.model.hasOwnProperty('id') ? 'proveedores.update' : 'proveedores.store';
                 axios.post(route(url), this.model)
                     .then((res) => {
-                        this.dataUnidades = res.data.info;
+                        this.dataProveedores = res.data.info;
                         this.errores = null;
                         this.modalForm = false;
                         this.limpiarModelo();
@@ -161,8 +199,10 @@
             },
             editarModal(row) {
                 this.modalForm = true;
-                let model = this.dataUnidades.filter(unidad => unidad.id == row.id)[0];
-                this.model = model;
+                let model = this.dataProveedores.filter(proveedor => proveedor.id == row.id)[0];
+                this.model.nombre = model.nombre;
+                this.model.descripcion = model.descripcion;
+                this.model.id = model.id;
             },
             desactivar(row) {
                 console.log(row.id);

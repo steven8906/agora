@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categorias;
+use App\Models\Unidades;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -10,33 +10,42 @@ use Inertia\Inertia;
 class UnidadesController extends Controller
 {
     public function index(){
-/*        $categorias = Categorias::all();
-        $usuario    = Auth::user();
-        return Inertia::render('Categorias/Index', compact('categorias', 'usuario'));*/
-        return Inertia::render('Unidades/Index');
+        $usuario  = Auth::user();
+        $unidades = Unidades::all();
+        return Inertia::render('Unidades/Index', compact('usuario', 'unidades'));
     }
 
     public function store(Request $request)
     {
-/*        $reglas = array(
-            'nombre' => 'required',
+        $reglas = array(
+            'unidad' => 'required',
+            'clave'  => 'required',
+            'tipo'   => 'required',
         );
 
-        $mensaje = array('required' => 'El campo :attribute, es obligatorio');
+        $mensaje = array(
+            'required' => 'El campo :attribute, es obligatorio',
+        );
+
         $request->validate($reglas, $mensaje);
-        Categorias::create($request->only('nombre', 'descripcion'));
-        return response()->json(array('success' => true, 'info' => Categorias::all()));*/
+        Unidades::create($request->all());
+        return response()->json(array('success' => true, 'info' => Unidades::all()));
     }
 
     public function update(Request $request){
-/*        $reglas = array(
-            'id'      => 'required',
-            'nombre'  => 'required',
+        $reglas = array(
+            'unidad' => 'required',
+            'clave'  => 'required',
+            'tipo'   => 'required',
+        );
+
+        $mensaje = array(
+            'required' => 'El campo :attribute, es obligatorio',
         );
 
         $mensaje = array('required' => 'El campo :attribute, es obligatorio');
         $request->validate($reglas, $mensaje);
-        Categorias::where('id', $request->only('id'))->update($request->all());
-        return response()->json(array('success' => true, 'info' => Categorias::all()));*/
+        Unidades::where('id', $request->only('id'))->update($request->only('unidad', 'clave', 'tipo'));
+        return response()->json(array('success' => true, 'info' => Unidades::all()));
     }
 }
