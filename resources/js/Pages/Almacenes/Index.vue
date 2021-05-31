@@ -13,6 +13,12 @@
                     <el-table v-if="dataAlmacenes.length > 0"
                         :data="displayData"
                         style="width: 100%">
+                        <el-table-column label="Estatus" prop="condicion">
+                            <template #default="scope">
+                                <el-tag type="success" v-if="scope.row.condicion == 1" effect="dark">Activo</el-tag>
+                                <el-tag type="danger" effect="dark" v-else>Inactivo</el-tag>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="Almacén" prop="almacen">
                         </el-table-column>
                         <el-table-column label="Descripción" prop="descripcion">
@@ -127,6 +133,11 @@
                 let url = this.model.hasOwnProperty('id') ? 'almacenes.update' : 'almacenes.store';
                 axios.post(route(url), this.model)
                     .then((res) => {
+                        this.$notify({
+                            title: 'Transacción exitosa',
+                            message: 'Solicitud realizada con éxito',
+                            type: 'success'
+                        });
                         this.dataAlmacenes = res.data.info;
                         this.errores = null;
                         this.modalForm = false;

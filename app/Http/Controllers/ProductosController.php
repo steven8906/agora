@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Almacenes;
 use App\Models\Categorias;
+use App\Models\Multialmacen;
 use App\Models\Producto;
 use App\Models\Proveedor;
 use App\Models\Unidades;
@@ -21,7 +23,9 @@ class ProductosController extends Controller
         $unidades      = Unidades::all();
         $productos     = $this->productosRelacionados();
         $codigo_barras = $this->generarBarras();
-        return Inertia::render('Productos/Index', compact('usuario', 'proveedores', 'categorias', 'unidades', 'codigo_barras', 'productos'));
+        $almacenes     = Almacenes::all();
+        return Inertia::render('Productos/Index', compact('usuario', 'proveedores', 'categorias',
+                                            'unidades', 'codigo_barras', 'productos', 'almacenes'));
     }
 
     public function store(Request $request)
@@ -34,15 +38,16 @@ class ProductosController extends Controller
             'tipo'               => 'required',
             'unidad_entrada'     => 'required',
             'unidad_salida'      => 'required',
-            'precio_compra'      => 'required',
-            'precio_venta'       => 'required',
-            'precio_minimo'      => 'required',
-            'precio_liquidacion' => 'required',
-            'precio_mayorista'   => 'required',
+            'precio_compra'      => 'numeric',
+            'precio_venta'       => 'numeric',
+            'precio_minimo'      => 'numeric',
+            'precio_liquidacion' => 'numeric',
+            'precio_mayorista'   => 'numeric',
             'imagen'             => 'mimes:jpeg,jpg,png,gif',
         );
         $mensaje = array(
             'required' => 'El campo :attribute, es obligatorio',
+            'numeric'    => 'El campo :attribute, debe ser en formato moneda',
         );
         $request->validate($reglas, $mensaje);
         $nombre_archivo_md5      = md5(time()) . '_' . $request->file('imagen')->getClientOriginalName();
@@ -85,6 +90,10 @@ class ProductosController extends Controller
         $request->validate($reglas, $mensaje);
         Proveedor::where('id', $request->only('id'))->update($request->all());
         return response()->json(array('success' => true, 'info' => $this->productosRelacionados()));
+    }
+
+    public function multialmacenProducto(Request $request, $id_producto){
+        return response()->json(Multialmacen::where('id_producto', $id_producto)->get());
     }
 
     private function productosRelacionados(){
