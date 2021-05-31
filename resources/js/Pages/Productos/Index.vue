@@ -15,7 +15,12 @@
                               stripe
                               border
                               style="width: 100%">
-                        <el-table-column label="Estatus" prop="condicion"></el-table-column>
+                        <el-table-column label="Estatus" prop="condicion">
+                            <template #default="scope">
+                                <el-tag type="success" v-if="scope.row.condicion == 1" effect="dark">Activo</el-tag>
+                                <el-tag type="danger" effect="dark" v-else>Inactivo</el-tag>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="Categoría" prop="categoria"></el-table-column>
                         <el-table-column label="Producto" prop="proveedor"></el-table-column>
                         <el-table-column label="Código" prop="codigo"></el-table-column>
@@ -43,10 +48,16 @@
                                 <el-input v-model="search" size="mini" placeholder="Buscar..."/>
                             </template>
                             <template #default="scope">
-                                <el-button size="mini" type="warning" icon="el-icon-edit"
-                                           @click="editarModal(scope.row)">Editar
-                                </el-button>
-                                &nbsp;
+                                <el-tooltip content="Multialmacén center" placement="top" effect="light">
+                                    <el-button size="mini" icon="el-icon-connection"
+                                               @click="verMultialmacen(scope.row.id)">
+                                    </el-button>
+                                </el-tooltip>
+                                <el-tooltip content="Editar center" placement="top" effect="light">
+                                    <el-button size="mini" type="warning" icon="el-icon-edit"
+                                               @click="editarModal(scope.row)">
+                                    </el-button>
+                                </el-tooltip>
                                 <el-popconfirm
                                     confirmButtonText='Aceptar'
                                     cancelButtonText='Cancelar'
@@ -56,7 +67,7 @@
                                     @confirm="desactivar(scope.row)"
                                 >
                                     <template #reference>
-                                        <el-button size="mini" type="danger" icon="el-icon-delete">Desactivar</el-button>
+                                        <el-button size="mini" type="danger" icon="el-icon-delete"></el-button>
                                     </template>
                                 </el-popconfirm>
                             </template>
@@ -107,6 +118,10 @@
                               :rules="[{required:true, message:'Campo obligatorio'}]">
                     <el-input placeholder="Código" v-model="model.codigo" clearable disabled></el-input>
                 </el-form-item>
+                <el-form-item label="Código alterno:"
+                              prop="codigo_alterno">
+                    <el-input placeholder="Código alterno" v-model="model.codigo_alterno" :value="0" clearable></el-input>
+                </el-form-item>
                 <el-form-item label="Tipo:"
                               :rules="[{required:true, message:'Campo obligatorio'}]">
                     <el-select v-model="model.tipo" placeholder="Tipo">
@@ -138,21 +153,31 @@
                               :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message: 'Ingrese un precio válido'}]">
                     <el-input placeholder="Precio venta" v-model.number="model.precio_venta" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="Precio minímo:"
-                              :prop="precio_minimo"
-                              :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message: 'Ingrese un precio válido'}]">
-                    <el-input placeholder="Precio minímo" v-model.number="model.precio_minimo" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="Precio liquidación:"
-                              :prop="precio_liquidacion"
-                              :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message: 'Ingrese un precio válido'}]">
-                    <el-input placeholder="Precio liquidación" v-model.number="model.precio_liquidacion" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="Precio mayorista:"
-                              :prop="precio_mayorista"
-                              :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message: 'Ingrese un precio válido'}]">
-                    <el-input placeholder="Precio mayorista" v-model.number="model.precio_mayorista" clearable></el-input>
-                </el-form-item>
+                <el-collapse>
+                    <el-collapse-item title="Precio minímo" name="2">
+                        <el-form-item label="Precio minímo:"
+                                      :prop="precio_minimo"
+                                      :rules="[{type:'number', message: 'Ingrese un precio válido'}]">
+                            <el-input placeholder="Precio minímo" v-model.number="model.precio_minimo" model-value="0" clearable></el-input>
+                        </el-form-item>
+                    </el-collapse-item>
+                    <el-collapse-item title="Precio liquidación" name="3">
+                        <el-form-item label="Precio liquidación:"
+                                      :prop="precio_liquidacion"
+                                      :rules="[{type:'number', message: 'Ingrese un precio válido'}]">
+                            <el-input placeholder="Precio liquidación" v-model.number="model.precio_liquidacion" model-value="0" clearable></el-input>
+                        </el-form-item>
+                    </el-collapse-item>
+                    <el-collapse-item title="Precio mayorista" name="4">
+                        <el-form-item label="Precio mayorista:"
+                                      :prop="precio_mayorista"
+                                      :rules="[{type:'number', message: 'Ingrese un precio válido'}]">
+                            <el-input placeholder="Precio mayorista" v-model.number="model.precio_mayorista" model-value="0" clearable></el-input>
+                        </el-form-item>
+                    </el-collapse-item>
+                </el-collapse>
+                <br>
+                <br>
                 <el-form-item label="Ubicación:"
                               :prop="ubicacion">
                     <el-input placeholder="Ubicación" v-model.number="model.ubicacion" clearable></el-input>
@@ -162,6 +187,7 @@
                 </el-form-item>
                 <el-form-item label="Imágen:">
                     <el-upload
+                        style="width: 100%;"
                         class="el-upload-dragger"
                         action=""
                         :multiple="false"
@@ -172,9 +198,12 @@
                         <div class="el-upload__text">Suelta tu archivo aquí o <em>haz clic para cargar</em></div>
                     </el-upload>
                 </el-form-item>
+                <error-form :errores="errores" v-show="errores !== null"></error-form>
             </el-form>
-            <error-form :errores="errores"></error-form>
+            <el-divider></el-divider>
             <template #footer>
+                <img :data-value="this.model.codigo" :data-text="this.model.codigo" class="codigo" style="margin: auto;"/>
+                <el-divider></el-divider>
                 <span class="dialog-footer">
                   <el-button @click="modalForm = false">Cancelar</el-button>
                   <el-button type="primary" @click="guardar">Aceptar</el-button>
@@ -182,6 +211,40 @@
             </template>
         </el-dialog>
         <!--  Fin-Formulario de registro y actualizacion-->
+        <!--  Inicio-Formulario de registro multialmacen-->
+        <el-dialog
+            title="Formulario de registro a multialmacén"
+            v-model="modalMultialmacen"
+            width="30%">
+            <el-alert v-if="modelMultialmacen.length === 0"
+                      title="Sin datos para mostrar"
+                      type="info"
+                      description="Éste producto no tiene almacén asignado"
+                      :closable="false"
+                      show-icon>
+            </el-alert>
+            <el-card class="box-card" v-else>
+                <p v-for="(almacen, index) in modelMultialmacen" :key="index" class="text item">
+                    <i class="el-icon-circle-check"></i>&nbsp;{{almacen.almacen}}
+                </p>
+            </el-card>
+            <el-divider></el-divider>
+            <div v-if="almacenes.length > 0" v-for="(item, index) in almacenes" :key="index">
+                <el-card class="box-card">
+                    
+                </el-card>
+                <el-divider></el-divider>
+            </div>
+            <code>{{modelMultialmacen}}</code>
+            <error-form :errores="errores" v-show="errores !== null"></error-form>
+            <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="modalMultialmacen = false">Cancelar</el-button>
+                  <el-button type="primary" @click="modalMultialmacen = false">Aceptar</el-button>
+                </span>
+            </template>
+        </el-dialog>
+        <!--  Fin-Formulario de registro multialmacen-->
         <cargando :mostrarCargando="loading"></cargando>
     </app-main>
 </template>
@@ -193,7 +256,7 @@
 
     export default {
         name: "Index",
-        props: ['categorias', 'proveedores', 'productos', 'codigo_barras', 'unidades', 'usuario'],
+        props: ['categorias', 'proveedores', 'productos', 'codigo_barras', 'unidades', 'usuario', 'almacenes'],
         components: {AppMain, ErrorForm, Cargando},
         data() {
             return{
@@ -206,9 +269,11 @@
                 search: "",
                 //bloque obligatorio para paginacion de tabla
                 modalForm: false,
+                modalMultialmacen:false,
                 model: {
                     codigo: this.codigo_barras
                 },
+                modelMultialmacen:[],
                 imagen:null,
                 listaArchivo:[],
                 errores: null,
@@ -240,6 +305,11 @@
                 axios.defaults.headers.post['Content-Type'] = 'multipart/form-data';
                 axios.post(route(url), form)
                     .then((res) => {
+                        this.$notify({
+                            title: 'Transacción exitosa',
+                            message: 'Solicitud realizada con éxito',
+                            type: 'success'
+                        });
                         this.dataProductos = res.data.info.productos;
                         this.errores = null;
                         this.modalForm = false;
@@ -260,9 +330,7 @@
             editarModal(row) {
                 this.modalForm = true;
                 let model = this.dataProductos.filter(proveedor => proveedor.id == row.id)[0];
-                this.model.nombre = model.nombre;
-                this.model.descripcion = model.descripcion;
-                this.model.id = model.id;
+                this.model = model;
             },
             desactivar(row) {
                 console.log(row.id);
@@ -277,7 +345,27 @@
             },
             upload(imagen, lista){
                 this.listaArchivo = lista;
+            },
+            verMultialmacen(id_almacen){
+                this.loading = true;
+                axios.get(`/multialmacen/producto/${id_almacen}`)
+                    .then(res => this.modelMultialmacen = res.data)
+                    .catch((error) => {
+                        let aux = [];
+                        let info = Object.values(error.response.data.errors);
+                        info.forEach((item) => aux.push(item[0]));
+                        this.errores = aux;
+                    }).finally(() =>
+                    setTimeout(() => {
+                        this.loading = false
+                    }, 1000));
+                console.log(id_almacen)
+                this.modalMultialmacen = true;
+                console.log(this.modelMultialmacen)
             }
+        },
+        mounted() {
+            JsBarcode(".codigo").init();
         }
     }
 </script>

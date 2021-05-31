@@ -15,6 +15,12 @@
                               stripe
                               border
                               style="width: 100%">
+                        <el-table-column label="Estatus" prop="condicion">
+                            <template #default="scope">
+                                <el-tag type="success" v-if="scope.row.condicion == 1" effect="dark">Activo</el-tag>
+                                <el-tag type="danger" effect="dark" v-else>Inactivo</el-tag>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="Proveedor" prop="nombre"></el-table-column>
                         <el-table-column label="Teléfono" prop="telefono"></el-table-column>
                         <el-table-column label="Email" prop="email"></el-table-column>
@@ -121,8 +127,8 @@
                 <el-form-item label="Dirección:">
                     <el-input placeholder="Dirección" v-model="model.direccion" clearable></el-input>
                 </el-form-item>
+                <error-form :errores="errores" v-show="errores !== null"></error-form>
             </el-form>
-            <error-form :errores="errores"></error-form>
             <template #footer>
                 <span class="dialog-footer">
                   <el-button @click="modalForm = false">Cancelar</el-button>
@@ -181,6 +187,11 @@
                 let url = this.model.hasOwnProperty('id') ? 'proveedores.update' : 'proveedores.store';
                 axios.post(route(url), this.model)
                     .then((res) => {
+                        this.$notify({
+                            title: 'Transacción exitosa',
+                            message: 'Solicitud realizada con éxito',
+                            type: 'success'
+                        });
                         this.dataProveedores = res.data.info;
                         this.errores = null;
                         this.modalForm = false;

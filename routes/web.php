@@ -61,3 +61,9 @@ Route::post('/productos/actualizar', [ProductosController::class, 'update'])->na
 Route::get('/proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
 Route::post('/proveedores/guardar', [ProveedorController::class, 'store'])->name('proveedores.store');
 Route::post('/proveedores/actualizar', [ProveedorController::class, 'update'])->name('proveedores.update');
+
+Route::group(['prefix' => 'multialmacen'] , function (){
+    Route::get('/producto/{id_producto}', [ProductosController::class, 'multialmacenProducto'])->name('multialmacen.producto');
+    Route::post('/guardar', [ProductosController::class, 'store'])->name('multialmacen.store');
+});
+

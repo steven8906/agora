@@ -13,6 +13,7 @@ class Producto extends Model
         'idcategoria',
         'idproveedor',
         'codigo',
+        'codigo_alterno',
         'nombre',
         'precio_compra',
         'descripcion',
