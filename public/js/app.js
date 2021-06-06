@@ -22941,7 +22941,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       search: ""
     }, _defineProperty(_ref, "modalForm", false), _defineProperty(_ref, "modalMultialmacen", false), _defineProperty(_ref, "model", {
       codigo: this.codigo_barras
-    }), _defineProperty(_ref, "modelMultialmacen", []), _defineProperty(_ref, "imagen", null), _defineProperty(_ref, "listaArchivo", []), _defineProperty(_ref, "errores", null), _defineProperty(_ref, "loading", false), _ref;
+    }), _defineProperty(_ref, "modelMultialmacen", null), _defineProperty(_ref, "imagen", null), _defineProperty(_ref, "listaArchivo", []), _defineProperty(_ref, "errores", null), _defineProperty(_ref, "loading", false), _ref;
   },
   //bloque obligatorio para paginacion de tabla
   computed: {
@@ -23025,12 +23025,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     upload: function upload(imagen, lista) {
       this.listaArchivo = lista;
     },
-    verMultialmacen: function verMultialmacen(id_almacen) {
+    verMultialmacen: function verMultialmacen(id_producto) {
       var _this2 = this;
 
       this.loading = true;
-      axios.get("/multialmacen/producto/".concat(id_almacen)).then(function (res) {
-        return _this2.modelMultialmacen = res.data;
+      axios.get("/multialmacen/producto/".concat(id_producto)).then(function (res) {
+        _this2.modalMultialmacen = true;
+        _this2.modelMultialmacen = res.data;
+        _this2.modelMultialmacen.id_producto = id_producto;
       })["catch"](function (error) {
         var aux = [];
         var info = Object.values(error.response.data.errors);
@@ -23043,9 +23045,42 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           _this2.loading = false;
         }, 1000);
       });
-      console.log(id_almacen);
-      this.modalMultialmacen = true;
-      console.log(this.modelMultialmacen);
+    },
+    guardarMultialmacen: function guardarMultialmacen() {
+      var _this3 = this;
+
+      this.errores = null;
+      this.loading = true;
+      var model = {
+        id_producto: this.modelMultialmacen.id_producto,
+        almacenes: this.modelMultialmacen.almacenes,
+        stock: this.modelMultialmacen.stock,
+        stock_minimo: this.modelMultialmacen.stock_minimo,
+        stock_maximo: this.modelMultialmacen.stock_maximo
+      };
+      axios.post(route('multialmacen.store'), model).then(function (res) {
+        _this3.$notify({
+          title: 'Transacción exitosa',
+          message: 'Solicitud realizada con éxito',
+          type: 'success'
+        });
+
+        _this3.modelMultialmacen = res.data.info.multialmacenes;
+        _this3.modalMultialmacen = false;
+        _this3.dataProductos = res.data.info.productos;
+        _this3.model.codigo = res.data.codigo_barras;
+      })["catch"](function (error) {
+        var aux = [];
+        var info = Object.values(error.response.data.errors);
+        info.forEach(function (item) {
+          return aux.push(item[0]);
+        });
+        _this3.errores = aux;
+      })["finally"](function () {
+        return setTimeout(function () {
+          _this3.loading = false;
+        }, 1000);
+      });
     }
   },
   mounted: function mounted() {
@@ -28977,19 +29012,13 @@ var _hoisted_13 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNo
 
 var _hoisted_14 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
 
-var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-circle-check"
-}, null, -1
-/* HOISTED */
-);
-
-var _hoisted_16 = {
+var _hoisted_15 = {
   "class": "dialog-footer"
 };
 
-var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Cancelar");
+var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Cancelar");
 
-var _hoisted_18 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
+var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
 
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _this = this;
@@ -29899,16 +29928,26 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       , ["modelValue"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("  Fin-Formulario de registro y actualizacion"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("  Inicio-Formulario de registro multialmacen"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_dialog, {
         title: "Formulario de registro a multialmacén",
         modelValue: $data.modalMultialmacen,
-        "onUpdate:modelValue": _cache[22] || (_cache[22] = function ($event) {
+        "onUpdate:modelValue": _cache[25] || (_cache[25] = function ($event) {
           return $data.modalMultialmacen = $event;
         }),
         width: "30%"
       }, {
         footer: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
-            onClick: _cache[20] || (_cache[20] = function ($event) {
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+            onClick: _cache[24] || (_cache[24] = function ($event) {
               return $data.modalMultialmacen = false;
             })
+          }, {
+            "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+              return [_hoisted_16];
+            }),
+            _: 1
+            /* STABLE */
+
+          }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+            type: "primary",
+            onClick: $options.guardarMultialmacen
           }, {
             "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
               return [_hoisted_17];
@@ -29916,64 +29955,166 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
             _: 1
             /* STABLE */
 
-          }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
-            type: "primary",
-            onClick: _cache[21] || (_cache[21] = function ($event) {
-              return $data.modalMultialmacen = false;
-            })
-          }, {
-            "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-              return [_hoisted_18];
-            }),
-            _: 1
-            /* STABLE */
-
-          })])];
+          }, 8
+          /* PROPS */
+          , ["onClick"])])];
         }),
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [$data.modelMultialmacen.length === 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_el_alert, {
-            key: 0,
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_alert, {
             title: "Sin datos para mostrar",
             type: "info",
             description: "Éste producto no tiene almacén asignado",
             closable: false,
             "show-icon": ""
-          })) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_el_card, {
-            key: 1,
-            "class": "box-card"
+          }, null, 512
+          /* NEED_PATCH */
+          ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.modelMultialmacen === null || $data.modelMultialmacen.length === 0]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form, {
+            ref: "formMultialmacen",
+            "label-width": "150px",
+            model: $data.modelMultialmacen
           }, {
             "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-              return [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.modelMultialmacen, function (almacen, index) {
-                return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("p", {
-                  key: index,
-                  "class": "text item"
-                }, [_hoisted_15, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(almacen.almacen), 1
-                /* TEXT */
-                )]);
-              }), 128
-              /* KEYED_FRAGMENT */
-              ))];
+              return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+                label: "Almacénes:",
+                prop: "almacenes",
+                rules: [{
+                  required: true,
+                  message: 'Campo obligatorio'
+                }]
+              }, {
+                "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_select, {
+                    modelValue: $data.modelMultialmacen.almacenes,
+                    "onUpdate:modelValue": _cache[20] || (_cache[20] = function ($event) {
+                      return $data.modelMultialmacen.almacenes = $event;
+                    }),
+                    placeholder: "Seleccione almacén",
+                    multiple: "",
+                    filterable: "",
+                    clearable: ""
+                  }, {
+                    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+                      return [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.almacenes, function (item) {
+                        return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_el_option, {
+                          key: item.id,
+                          label: item.almacen,
+                          value: item.id
+                        }, null, 8
+                        /* PROPS */
+                        , ["label", "value"]);
+                      }), 128
+                      /* KEYED_FRAGMENT */
+                      ))];
+                    }),
+                    _: 1
+                    /* STABLE */
+
+                  }, 8
+                  /* PROPS */
+                  , ["modelValue"])];
+                }),
+                _: 1
+                /* STABLE */
+
+              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+                label: "Stock:",
+                prop: "stock",
+                rules: [{
+                  required: true,
+                  message: 'Campo obligatorio'
+                }, {
+                  type: 'number',
+                  message: 'Campo ingresado debe ser numérico'
+                }]
+              }, {
+                "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
+                    placeholder: "Stock",
+                    modelValue: $data.modelMultialmacen.stock,
+                    "onUpdate:modelValue": _cache[21] || (_cache[21] = function ($event) {
+                      return $data.modelMultialmacen.stock = $event;
+                    }),
+                    modelModifiers: {
+                      number: true
+                    },
+                    clearable: ""
+                  }, null, 8
+                  /* PROPS */
+                  , ["modelValue"])];
+                }),
+                _: 1
+                /* STABLE */
+
+              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+                label: "Stock minímo:",
+                prop: "stock_minimo",
+                rules: [{
+                  required: true,
+                  message: 'Campo obligatorio'
+                }, {
+                  type: 'number',
+                  message: 'Campo ingresado debe ser numérico'
+                }]
+              }, {
+                "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
+                    placeholder: "Stock",
+                    modelValue: $data.modelMultialmacen.stock_minimo,
+                    "onUpdate:modelValue": _cache[22] || (_cache[22] = function ($event) {
+                      return $data.modelMultialmacen.stock_minimo = $event;
+                    }),
+                    modelModifiers: {
+                      number: true
+                    },
+                    clearable: ""
+                  }, null, 8
+                  /* PROPS */
+                  , ["modelValue"])];
+                }),
+                _: 1
+                /* STABLE */
+
+              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+                label: "Stock máximo:",
+                prop: "stock_maximo",
+                rules: [{
+                  required: true,
+                  message: 'Campo obligatorio'
+                }, {
+                  type: 'number',
+                  message: 'Campo ingresado debe ser numérico'
+                }]
+              }, {
+                "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
+                    placeholder: "Stock",
+                    modelValue: $data.modelMultialmacen.stock_maximo,
+                    "onUpdate:modelValue": _cache[23] || (_cache[23] = function ($event) {
+                      return $data.modelMultialmacen.stock_maximo = $event;
+                    }),
+                    modelModifiers: {
+                      number: true
+                    },
+                    clearable: ""
+                  }, null, 8
+                  /* PROPS */
+                  , ["modelValue"])];
+                }),
+                _: 1
+                /* STABLE */
+
+              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_error_form, {
+                errores: $data.errores
+              }, null, 8
+              /* PROPS */
+              , ["errores"]), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.errores !== null]])];
             }),
             _: 1
             /* STABLE */
 
-          })), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), $props.almacenes.length > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
-            key: 2
-          }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.almacenes, function (item, index) {
-            return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("div", {
-              key: index
-            }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_card, {
-              "class": "box-card"
-            }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider)]);
-          }), 128
-          /* KEYED_FRAGMENT */
-          )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("code", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.modelMultialmacen), 1
-          /* TEXT */
-          ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_error_form, {
-            errores: $data.errores
-          }, null, 8
+          }, 8
           /* PROPS */
-          , ["errores"]), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.errores !== null]])];
+          , ["model"])];
         }),
         _: 1
         /* STABLE */

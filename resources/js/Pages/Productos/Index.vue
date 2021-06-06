@@ -216,31 +216,43 @@
             title="Formulario de registro a multialmacén"
             v-model="modalMultialmacen"
             width="30%">
-            <el-alert v-if="modelMultialmacen.length === 0"
+            <el-alert v-show="modelMultialmacen === null || modelMultialmacen.length === 0"
                       title="Sin datos para mostrar"
                       type="info"
                       description="Éste producto no tiene almacén asignado"
                       :closable="false"
                       show-icon>
             </el-alert>
-            <el-card class="box-card" v-else>
-                <p v-for="(almacen, index) in modelMultialmacen" :key="index" class="text item">
-                    <i class="el-icon-circle-check"></i>&nbsp;{{almacen.almacen}}
-                </p>
-            </el-card>
             <el-divider></el-divider>
-            <div v-if="almacenes.length > 0" v-for="(item, index) in almacenes" :key="index">
-                <el-card class="box-card">
-                    
-                </el-card>
-                <el-divider></el-divider>
-            </div>
-            <code>{{modelMultialmacen}}</code>
-            <error-form :errores="errores" v-show="errores !== null"></error-form>
+            <el-form ref="formMultialmacen" label-width="150px" :model="modelMultialmacen">
+                <el-form-item label="Almacénes:"
+                              prop="almacenes"
+                              :rules="[{required:true, message:'Campo obligatorio'}]">
+                    <el-select v-model="modelMultialmacen.almacenes" placeholder="Seleccione almacén" multiple filterable clearable>
+                        <el-option v-for="item in almacenes" :key="item.id" :label="item.almacen" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="Stock:"
+                              prop="stock"
+                              :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message:'Campo ingresado debe ser numérico'}]">
+                    <el-input placeholder="Stock" v-model.number="modelMultialmacen.stock" clearable></el-input>
+                </el-form-item>
+                <el-form-item label="Stock minímo:"
+                              prop="stock_minimo"
+                              :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message:'Campo ingresado debe ser numérico'}]">
+                    <el-input placeholder="Stock" v-model.number="modelMultialmacen.stock_minimo" clearable></el-input>
+                </el-form-item>
+                <el-form-item label="Stock máximo:"
+                              prop="stock_maximo"
+                              :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message:'Campo ingresado debe ser numérico'}]">
+                    <el-input placeholder="Stock" v-model.number="modelMultialmacen.stock_maximo" clearable></el-input>
+                </el-form-item>
+                <error-form :errores="errores" v-show="errores !== null"></error-form>
+            </el-form>
             <template #footer>
                 <span class="dialog-footer">
                   <el-button @click="modalMultialmacen = false">Cancelar</el-button>
-                  <el-button type="primary" @click="modalMultialmacen = false">Aceptar</el-button>
+                  <el-button type="primary" @click="guardarMultialmacen">Aceptar</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -273,7 +285,7 @@
                 model: {
                     codigo: this.codigo_barras
                 },
-                modelMultialmacen:[],
+                modelMultialmacen:null,
                 imagen:null,
                 listaArchivo:[],
                 errores: null,
@@ -346,10 +358,14 @@
             upload(imagen, lista){
                 this.listaArchivo = lista;
             },
-            verMultialmacen(id_almacen){
+            verMultialmacen(id_producto){
                 this.loading = true;
-                axios.get(`/multialmacen/producto/${id_almacen}`)
-                    .then(res => this.modelMultialmacen = res.data)
+                axios.get(`/multialmacen/producto/${id_producto}`)
+                    .then(res => {
+                        this.modalMultialmacen = true;
+                        this.modelMultialmacen = res.data
+                        this.modelMultialmacen.id_producto = id_producto;
+                    })
                     .catch((error) => {
                         let aux = [];
                         let info = Object.values(error.response.data.errors);
@@ -359,9 +375,38 @@
                     setTimeout(() => {
                         this.loading = false
                     }, 1000));
-                console.log(id_almacen)
-                this.modalMultialmacen = true;
-                console.log(this.modelMultialmacen)
+            },
+            guardarMultialmacen(){
+                this.errores = null;
+                this.loading = true
+                const model = {
+                    id_producto : this.modelMultialmacen.id_producto,
+                    almacenes : this.modelMultialmacen.almacenes,
+                    stock : this.modelMultialmacen.stock,
+                    stock_minimo : this.modelMultialmacen.stock_minimo,
+                    stock_maximo : this.modelMultialmacen.stock_maximo,
+                }
+                axios.post(route('multialmacen.store'), model)
+                    .then((res)=>{
+                        this.$notify({
+                            title: 'Transacción exitosa',
+                            message: 'Solicitud realizada con éxito',
+                            type: 'success'
+                        });
+                        this.modelMultialmacen = res.data.info.multialmacenes;
+                        this.modalMultialmacen = false;
+                        this.dataProductos = res.data.info.productos;
+                        this.model.codigo = res.data.codigo_barras;
+                    })
+                    .catch((error) => {
+                        let aux = [];
+                        let info = Object.values(error.response.data.errors);
+                        info.forEach((item) => aux.push(item[0]));
+                        this.errores = aux;
+                    }).finally(() =>
+                    setTimeout(() => {
+                        this.loading = false
+                    }, 1000));
             }
         },
         mounted() {
