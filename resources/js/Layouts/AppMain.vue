@@ -68,6 +68,11 @@
               <b><i class="el-icon-box c-white" style="vertical-align: baseline"></i></b>Clientes
             </el-menu-item>
           </inertia-link>
+            <inertia-link :href="route('cotizaciones.index')">
+            <el-menu-item index="14" class="b-primary-l c-white">
+              <b><i class="el-icon-box c-white" style="vertical-align: baseline"></i></b>Cotizaciones
+            </el-menu-item>
+          </inertia-link>
         </el-submenu>
       </el-menu>
     </el-aside>

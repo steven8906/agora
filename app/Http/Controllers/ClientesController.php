@@ -20,10 +20,11 @@ class ClientesController extends Controller
     public function store(Request $request)
     {
         $reglas = array(
-            'nombre' => 'required',
+            'cliente' => 'required',
+            'contacto' => 'required',
             'rfc' => 'required',
             'direccion' => 'required',
-            'telefono' => 'required',
+            'telefono_oficina' => 'required',
             'email' => 'required | email | unique:clientes',
         );
 
@@ -33,17 +34,18 @@ class ClientesController extends Controller
             'unique' => 'El :attribute esta repetido',
         );
         $request->validate($reglas, $mensaje);
-        Clientes::create($request->only('nombre', 'rfc', 'direccion', 'telefono', 'email'));
+        Clientes::create($request->only('cliente','contacto', 'rfc', 'direccion', 'telefono_oficina', 'telefono_movil', 'email'));
         return response()->json(array('success' => true, 'info' => Clientes::all()));
     }
 
     public function update(Request $request)
     {
         $reglas = array(
-            'nombre' => 'required',
+            'cliente' => 'required',
+            'contacto' => 'required',
             'rfc' => 'required',
             'direccion' => 'required',
-            'telefono' => 'required',
+            'telefono_oficina' => 'required',
             'email' => [
                 'required',
                 'email',
@@ -58,6 +60,8 @@ class ClientesController extends Controller
             'unique' => 'El :attribute esta repetido',
         );
         $request->validate($reglas, $mensaje);
+
+
         Clientes::where('id', $request->only('id'))->update($request->all());
         return response()->json(array('success' => true, 'info' => Clientes::all()));
     }
