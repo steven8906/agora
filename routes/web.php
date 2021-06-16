@@ -66,5 +66,6 @@ Route::post('/proveedores/actualizar', [ProveedorController::class, 'update'])->
 Route::get('/cotizaciones', [CotizacionesController::class, 'index'])->name('cotizaciones.index');
 Route::get('/cotizaciones/create', [CotizacionesController::class, 'create'])->name('cotizaciones.create');
 Route::post('/cotizaciones/guardar', [CotizacionesController::class, 'store'])->name('cotizaciones.store');
-Route::post('/cotizaciones/actualizar', [CotizacionesController::class, 'update'])->name('cotizaciones.update');
+Route::get('/cotizaciones/edit/{id}', [CotizacionesController::class, 'edit'])->name('cotizaciones.edit');
+Route::post('/cotizaciones/actualizar/{id}', [CotizacionesController::class, 'update'])->name('cotizaciones.update');
 Route::post('/cotizaciones/guardarFileExcel', [CotizacionesController::class, 'guardarFileExcel'])->name('cotizaciones.guardarFileExcel');

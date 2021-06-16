@@ -21,10 +21,11 @@ class CreateCotizacionesTable extends Migration
             $table->string('tiempo_entrega')->nullable();;
             $table->string('obra')->nullable();;
             $table->string('ubicacion')->nullable();;
+            $table->string('observaciones')->nullable();;
             $table->decimal('monto_subtotal', 12, 2);
             $table->decimal('monto_iva', 12, 2);
             $table->decimal('monto_total', 12, 2);
-            $table->date('fecha');
+            $table->date('fecha', "d/m/Y");
             $table->string('archivo_excel');
             $table->timestamps();
         });

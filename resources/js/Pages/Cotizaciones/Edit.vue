@@ -1,5 +1,5 @@
 <template>
-  <app-main selected="14" titulo="Nueva Cotización" :usuario="usuario">
+  <app-main selected="14" titulo="Editar Cotización" :usuario="usuario">
     <inertia-link :href="route('cotizaciones.index')">
       <el-button icon="el-icon-back">Volver</el-button>
     </inertia-link>
@@ -112,7 +112,7 @@
               align="center"
               width="100"
               label="Partida"
-              prop="partida"
+              prop="numero"
             ></el-table-column>
             <el-table-column
               align="center"
@@ -121,14 +121,14 @@
               prop="cantidad"
             ></el-table-column>
             <el-table-column
-              prop="unidad"
+              prop="idunidad"
               align="center"
               width="100"
               label="Unidad"
             >
               <template #default="scope">
                 <span style="margin-left: 10px">{{
-                  unidades[scope.row.unidad - 1].unidad
+                  unidades[scope.row.idunidad - 1].unidad
                 }}</span>
               </template>
             </el-table-column>
@@ -268,8 +268,8 @@
         <el-button type="danger" plain>Cancelar</el-button>
       </el-link>
       <template v-if="true"
-        ><el-button type="primary" :loading="loading" @click="crearCotizacion"
-          >Crear Cotizacion</el-button
+        ><el-button type="primary" :loading="loading" @click="editarCotizacion"
+          >Editar Cotizacion</el-button
         ></template
       >
     </div>
@@ -380,7 +380,14 @@ import ErrorForm from "@/Pages/Componentes/ErrorForm";
 import Cargando from "@/Pages/Componentes/Cargando";
 
 export default {
-  props: ["clientes", "usuario", "unidades"],
+  props: [
+    "clientes",
+    "usuario",
+    "unidades",
+    "cotizacion",
+    "usuarioSeleccionado",
+    "partidas",
+  ],
   components: { AppMain, ErrorForm, Cargando },
   data() {
     return {
@@ -401,32 +408,27 @@ export default {
           })(),
         },
       ],
-      //bloque obligatorio para paginacion de tabla
-      page: 1,
-      pageSize: 10,
-      total: 0,
-      search: "",
-      unidades: this.unidades,
-      //bloque obligatorio para paginacion de tabla
+
       usuarioSeleccionado: {
-        cliente: "",
-        contacto: "",
-        email: "",
-        telefono_oficina: "",
-        telefono_movil: "",
+        cliente: this.usuarioSeleccionado.cliente,
+        contacto: this.usuarioSeleccionado.contacto,
+        email: this.usuarioSeleccionado.email,
+        telefono_oficina: this.usuarioSeleccionado.telefono_oficina,
+        telefono_movil: this.usuarioSeleccionado.telefono_movil,
       },
       form: {
-        fecha: new Date(),
-        folio: "",
-        obra: "",
-        tiempo_entrega: "",
-        cliente_id: "",
-        observaciones: "",
-        dataPartidas: [],
-        monto_subtotal: 0,
-        monto_iva: 0,
-        monto_total: 0,
-        condiciones: "",
+        fecha: new Date(Date.parse(this.cotizacion.fecha) + 24*60*60*1000),
+        folio: this.cotizacion.folio,
+        obra: this.cotizacion.obra,
+        tiempo_entrega: this.cotizacion.tiempo_entrega,
+        ubicacion: this.cotizacion.ubicacion,
+        cliente_id: this.cotizacion.idcliente,
+        observaciones: this.cotizacion.observaciones,
+        dataPartidas: this.partidas,
+        monto_subtotal: this.cotizacion.monto_subtotal,
+        monto_iva: this.cotizacion.monto_iva,
+        monto_total: this.cotizacion.monto_total,
+        condiciones: this.cotizacion.condiciones,
       },
       dialogTableVisible: false,
       dataClientes: this.clientes,
@@ -434,7 +436,7 @@ export default {
       loading: false,
       fileCalculo: [],
       formPartida: {
-        partida: 1,
+        partida: this.partidas.length + 1,
         cantidad: 1.0,
         unidad: "",
         descripcion: "",
@@ -510,9 +512,11 @@ export default {
       }).format(this.formPartida.total);
     },
     displaySubtotal() {
-      this.form.monto_subtotal = this.getSubtotal();
-      this.form.monto_iva = this.form.monto_subtotal * 0.16;
-      this.form.monto_total = this.form.monto_iva + this.form.monto_subtotal;
+      this.form.monto_subtotal = parseFloat(this.getSubtotal());
+      this.form.monto_iva = parseFloat(this.form.monto_subtotal) * 0.16;
+      this.form.monto_total = parseFloat(
+        this.form.monto_iva + this.form.monto_subtotal
+      );
       return this.form.monto_subtotal;
     },
   },
@@ -521,9 +525,9 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.form.dataPartidas.push({
-            partida: this.formPartida.partida,
+            numero: this.formPartida.partida,
             cantidad: this.formPartida.cantidad,
-            unidad: this.formPartida.unidad,
+            idunidad: this.formPartida.unidad,
             descripcion: this.formPartida.descripcion,
             precio: this.formPartida.precio,
             total: this.formPartida.total,
@@ -552,7 +556,7 @@ export default {
     getSubtotal() {
       var sum = 0;
       this.form.dataPartidas.forEach((value, index, array) => {
-        sum = sum + value.total;
+        sum = sum + parseFloat(value.total);
       });
       return sum;
     },
@@ -561,10 +565,11 @@ export default {
       this.form.cliente_id = this.dataClientes[index].id;
       this.dialogTableVisible = false;
     },
-    crearCotizacion() {
+    editarCotizacion() {
       this.loading = true;
       // this.erroresDialogVisible = false;
-      let url = "cotizaciones.store";
+      let url = "cotizaciones.update";
+      let id_cotizacion = this.cotizacion.id;
       // fecha
       let fecha = this.form.fecha.toLocaleDateString("en-CA", {
         year: "numeric",
@@ -587,40 +592,9 @@ export default {
       //encabezadao de multiparts/form
       axios.defaults.headers.post["Content-Type"] = "multipart/form-data";
       axios
-        .post(route(url), formData)
+        .post(route(url, id_cotizacion ), formData )
         .then((res) => {
-          this.$message.success(`Cotización creada con exito.`);
-          //Limpiar campos
-          this.errores = null;
-          this.form = {
-            fecha: new Date(),
-            folio: "",
-            obra: "",
-            tiempo_entrega: "",
-            cliente_id: "",
-            observaciones: "",
-            dataPartidas: [],
-            monto_subtotal: 0,
-            monto_iva: 0,
-            monto_total: 0,
-            condiciones: "",
-          };
-          this.fileCalculo = [];
-          this.formPartida = {
-            partida: 1,
-            cantidad: 1.0,
-            unidad: "",
-            descripcion: "",
-            precio: 1.0,
-            total: 1.0,
-          };
-          this.usuarioSeleccionado = {
-            cliente: "",
-            contacto: "",
-            email: "",
-            telefono_oficina: "",
-            telefono_movil: "",
-          };
+          this.$message.success(`Cotización Actualizada con exito.`);
         })
         .catch((error) => {
           //Se muestra modal con errores
