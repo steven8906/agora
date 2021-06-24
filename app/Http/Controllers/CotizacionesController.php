@@ -20,7 +20,7 @@ use function Psy\debug;
 
 class CotizacionesController extends Controller
 {
-    /***CRUD***/
+      /***CRUD***/
     public function index()
     {
         $cotizaciones = Cotizaciones::with('cliente')->get();
@@ -93,7 +93,7 @@ class CotizacionesController extends Controller
         ]);
 
 
-        //Guardar partidas de la cotizacion
+        //Guardar partidas de la cotizacion 
         foreach ($partidas as $partida) {
             PartidasCotizaciones::create([
                 'idcotizaciones' => $cotizacion_new->id,
@@ -122,7 +122,7 @@ class CotizacionesController extends Controller
 
     public function update( Request $request, $id )
     {
-        $cotizacion_old = Cotizaciones::find($id);
+       $cotizacion_old = Cotizaciones::find($id);
         //validacion de seleccion de un cliente
         if ($request->cliente_id == null) {
             return response()->json(array('errors' => ['cliente' => ['Debe seleccionar un cliente.']], 'message' => 'Debe seleccionar un cliente.'), 422);
@@ -152,7 +152,7 @@ class CotizacionesController extends Controller
         $partidas = collect(json_decode($request->partidas));
         if ($partidas->count() == 0)
             return response()->json(array('errors' => ['partidas' => ['Debe ingresar al menos una partida.']], 'message' => 'Debe ingresar al menos una partida.'), 422);
-
+       
         //Almacenar archivo excel
         if($request->file('ArchivoDeCalculo') == null){
             $path_excel =  $cotizacion_old->archivo_excel;
@@ -183,18 +183,18 @@ class CotizacionesController extends Controller
         if ($cotizacion_updated){
             //eliminar partidas
             $deletedRows = PartidasCotizaciones::where('idcotizaciones', $id)->delete();
-            //Guardar partidas nuevas de la cotizacion
-            foreach ($partidas as $partida) {
-                PartidasCotizaciones::create([
-                    'idcotizaciones' => $id,
-                    'numero' => $partida->numero,
-                    'descripcion' => $partida->descripcion,
-                    'cantidad' => $partida->cantidad,
-                    'precio' => $partida->precio,
-                    'idunidad' => $partida->idunidad,
-                    'total' => $partida->total,
-                ]);
-            }
+                //Guardar partidas nuevas de la cotizacion 
+                foreach ($partidas as $partida) {
+                    PartidasCotizaciones::create([
+                        'idcotizaciones' => $id,
+                        'numero' => $partida->numero,
+                        'descripcion' => $partida->descripcion,
+                        'cantidad' => $partida->cantidad,
+                        'precio' => $partida->precio,
+                        'idunidad' => $partida->idunidad,
+                        'total' => $partida->total,
+                    ]);
+                }
 
         }
 
