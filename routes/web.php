@@ -3,6 +3,7 @@
 use App\Http\Controllers\AlmacenesController;
 use App\Http\Controllers\CategoriasController;
 use App\Http\Controllers\ClientesController;
+use App\Http\Controllers\CotizacionesController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KitController;
 use App\Http\Controllers\MovimientosController;
@@ -88,3 +89,10 @@ Route::group(['prefix' => 'movimientos'] , function (){
     Route::post('/guardar', [MovimientosController::class, 'store'])->name('movimientos.store');
     Route::post('/actualizar', [MovimientosController::class, 'update'])->name('movimientos.update');
 });
+
+Route::get('/cotizaciones', [CotizacionesController::class, 'index'])->name('cotizaciones.index');
+Route::get('/cotizaciones/create', [CotizacionesController::class, 'create'])->name('cotizaciones.create');
+Route::post('/cotizaciones/guardar', [CotizacionesController::class, 'store'])->name('cotizaciones.store');
+Route::get('/cotizaciones/edit/{id}', [CotizacionesController::class, 'edit'])->name('cotizaciones.edit');
+Route::post('/cotizaciones/actualizar/{id}', [CotizacionesController::class, 'update'])->name('cotizaciones.update');
+Route::post('/cotizaciones/guardarFileExcel', [CotizacionesController::class, 'guardarFileExcel'])->name('cotizaciones.guardarFileExcel');
