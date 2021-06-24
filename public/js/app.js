@@ -22677,10 +22677,12 @@ __webpack_require__.r(__webpack_exports__);
       search: "",
       //bloque obligatorio para paginacion de tabla
       model: {
-        nombre: "",
+        cliente: "",
+        contacto: "",
         rfc: "",
         direccion: "",
-        telefono: "",
+        telefono_oficina: "",
+        telefono_movil: "",
         email: ""
       },
       errores: null,
@@ -22736,10 +22738,12 @@ __webpack_require__.r(__webpack_exports__);
       var model = this.dataClientes.filter(function (cliente) {
         return cliente.id == row.id;
       })[0];
-      this.model.nombre = model.nombre;
+      this.model.cliente = model.cliente;
+      this.model.contacto = model.contacto;
       this.model.rfc = model.rfc;
       this.model.direccion = model.direccion;
-      this.model.telefono = model.telefono;
+      this.model.telefono_oficina = model.telefono_oficina;
+      this.model.telefono_movil = model.telefono_movil;
       this.model.email = model.email;
       this.model.id = model.id;
     },
@@ -22752,10 +22756,12 @@ __webpack_require__.r(__webpack_exports__);
     },
     //bloque obligatorio para paginacion de tabla
     limpiarModelo: function limpiarModelo() {
-      this.model.nombre = "";
+      this.model.cliente = "";
+      this.model.contacto = "";
       this.model.rfc = "";
       this.model.direccion = "";
-      this.model.telefono = "";
+      this.model.telefono_oficina = "";
+      this.model.telefono_movil = "";
       this.model.email = "";
       delete this.model.id;
     }
@@ -29489,13 +29495,29 @@ var _hoisted_14 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(
 /* HOISTED */
 );
 
-var _hoisted_15 = {
+var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+/* HOISTED */
+);
+
+var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+/* HOISTED */
+);
+
+var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+/* HOISTED */
+);
+
+var _hoisted_18 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+/* HOISTED */
+);
+
+var _hoisted_19 = {
   "class": "dialog-footer"
 };
 
-var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Cancelar");
+var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Cancelar");
 
-var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
+var _hoisted_21 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
 
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_el_button = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-button");
@@ -29573,8 +29595,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                   }, {
                     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
                       return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
-                        label: "Nombre",
-                        prop: "nombre"
+                        label: "Cliente",
+                        prop: "cliente"
+                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
+                        label: "Contacto",
+                        prop: "contacto"
                       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
                         label: "RFC",
                         prop: "rfc"
@@ -29582,8 +29607,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                         label: "Direccíon",
                         prop: "direccion"
                       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
-                        label: "Telefono",
-                        prop: "telefono"
+                        label: "Tel Oficina",
+                        prop: "telefono_oficina"
+                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
+                        label: "Tel Movil",
+                        prop: "telefono_movil"
                       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
                         label: "Correo",
                         prop: "email"
@@ -29689,22 +29717,22 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         _: 1
         /* STABLE */
 
-      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("        Tabla y paginacion"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_dialog, {
+      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("    formulario de clientes "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_dialog, {
         title: "Formulario de Clientes",
         modelValue: $data.modalForm,
-        "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
+        "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
           return $data.modalForm = $event;
         }),
         width: "30%"
       }, {
         footer: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
-            onClick: _cache[8] || (_cache[8] = function ($event) {
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+            onClick: _cache[10] || (_cache[10] = function ($event) {
               return $data.modalForm = false;
             })
           }, {
             "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-              return [_hoisted_16];
+              return [_hoisted_20];
             }),
             _: 1
             /* STABLE */
@@ -29714,7 +29742,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
             onClick: $options.guardar
           }, {
             "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-              return [_hoisted_17];
+              return [_hoisted_21];
             }),
             _: 1
             /* STABLE */
@@ -29725,51 +29753,69 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         }),
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
           return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
-            placeholder: "Nombre",
-            modelValue: $data.model.nombre,
+            placeholder: "Cliente",
+            modelValue: $data.model.cliente,
             "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
-              return $data.model.nombre = $event;
+              return $data.model.cliente = $event;
             }),
             clearable: ""
           }, null, 8
           /* PROPS */
           , ["modelValue"]), _hoisted_5, _hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
-            placeholder: "RFC",
-            modelValue: $data.model.rfc,
+            placeholder: "Contacto",
+            modelValue: $data.model.contacto,
             "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
-              return $data.model.rfc = $event;
+              return $data.model.contacto = $event;
             }),
             clearable: ""
           }, null, 8
           /* PROPS */
           , ["modelValue"]), _hoisted_7, _hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
-            placeholder: "Dirección",
-            modelValue: $data.model.direccion,
+            placeholder: "RFC",
+            modelValue: $data.model.rfc,
             "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
-              return $data.model.direccion = $event;
+              return $data.model.rfc = $event;
             }),
             clearable: ""
           }, null, 8
           /* PROPS */
           , ["modelValue"]), _hoisted_9, _hoisted_10, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
-            placeholder: "Telefono",
-            modelValue: $data.model.telefono,
+            placeholder: "Dirección",
+            modelValue: $data.model.direccion,
             "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
-              return $data.model.telefono = $event;
+              return $data.model.direccion = $event;
             }),
             clearable: ""
           }, null, 8
           /* PROPS */
           , ["modelValue"]), _hoisted_11, _hoisted_12, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
+            placeholder: "Tel. Oficina ",
+            modelValue: $data.model.telefono_oficina,
+            "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
+              return $data.model.telefono_oficina = $event;
+            }),
+            clearable: ""
+          }, null, 8
+          /* PROPS */
+          , ["modelValue"]), _hoisted_13, _hoisted_14, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
+            placeholder: "Tel. Movil",
+            modelValue: $data.model.telefono_movil,
+            "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
+              return $data.model.telefono_movil = $event;
+            }),
+            clearable: ""
+          }, null, 8
+          /* PROPS */
+          , ["modelValue"]), _hoisted_15, _hoisted_16, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
             placeholder: "Correo",
             modelValue: $data.model.email,
-            "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
+            "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
               return $data.model.email = $event;
             }),
             clearable: ""
           }, null, 8
           /* PROPS */
-          , ["modelValue"]), _hoisted_13, _hoisted_14, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_error_form, {
+          , ["modelValue"]), _hoisted_17, _hoisted_18, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_error_form, {
             errores: $data.errores
           }, null, 8
           /* PROPS */
@@ -30385,7 +30431,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                         align: "right"
                       }, {
                         header: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <el-input\n                                  v-model=\"search\"\n                                  size=\"mini\"\n                                  placeholder=\"Buscar...\"\n                                /> ")];
+                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <el-input\r\n                  v-model=\"search\"\r\n                  size=\"mini\"\r\n                  placeholder=\"Buscar...\"\r\n                /> ")];
                         }),
                         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function (scope) {
                           return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_popconfirm, {
@@ -31406,7 +31452,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                         align: "right"
                       }, {
                         header: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <el-input\n                                  v-model=\"search\"\n                                  size=\"mini\"\n                                  placeholder=\"Buscar...\"\n                                /> ")];
+                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <el-input\r\n                  v-model=\"search\"\r\n                  size=\"mini\"\r\n                  placeholder=\"Buscar...\"\r\n                /> ")];
                         }),
                         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function (scope) {
                           return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_popconfirm, {
@@ -32042,7 +32088,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
                           }, 1032
                           /* PROPS, DYNAMIC_SLOTS */
-                          , ["href"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <el-popconfirm\n                                  confirmButtonText=\"Aceptar\"\n                                  cancelButtonText=\"Cancelar\"\n                                  icon=\"el-icon-info\"\n                                  iconColor=\"red\"\n                                  title=\"¿Confirma esta operación?\"\n                                  @confirm=\"desactivar(scope.row)\"\n                                >\n                                  <template #reference>\n                                    <el-button size=\"mini\" type=\"danger\" icon=\"el-icon-delete\"\n                                      >Desactivar</el-button\n                                    >\n                                  </template>\n                                </el-popconfirm> ")];
+                          , ["href"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <el-popconfirm\r\n                  confirmButtonText=\"Aceptar\"\r\n                  cancelButtonText=\"Cancelar\"\r\n                  icon=\"el-icon-info\"\r\n                  iconColor=\"red\"\r\n                  title=\"¿Confirma esta operación?\"\r\n                  @confirm=\"desactivar(scope.row)\"\r\n                >\r\n                  <template #reference>\r\n                    <el-button size=\"mini\" type=\"danger\" icon=\"el-icon-delete\"\r\n                      >Desactivar</el-button\r\n                    >\r\n                  </template>\r\n                </el-popconfirm> ")];
                         }),
                         _: 1
                         /* STABLE */
@@ -36930,7 +36976,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.el-container {\n  border: none !important;\n}\n.el-header {\n  background-color: #ffffff;\n  color: #333;\n  line-height: 60px;\n}\n.el-menu {\n  border-right: solid 5px #ff601c;\n  list-style: none;\n  position: relative;\n  margin: 0;\n  padding-left: 0;\n  background-color: #fff;\n}\n.c-white {\n  color: white !important;\n}\n.b-primary-l {\n  background: #132146 !important;\n}\n.b-primary-l:hover {\n  background: #6583a8 !important;\n}\n.el-submenu__title:hover {\n  background-color: #6583a8;\n  color: white !important;\n}\n.el-main {\n  background: #edf5f8;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.el-container {\r\n  border: none !important;\n}\n.el-header {\r\n  background-color: #ffffff;\r\n  color: #333;\r\n  line-height: 60px;\n}\n.el-menu {\r\n  border-right: solid 5px #ff601c;\r\n  list-style: none;\r\n  position: relative;\r\n  margin: 0;\r\n  padding-left: 0;\r\n  background-color: #fff;\n}\n.c-white {\r\n  color: white !important;\n}\n.b-primary-l {\r\n  background: #132146 !important;\n}\n.b-primary-l:hover {\r\n  background: #6583a8 !important;\n}\n.el-submenu__title:hover {\r\n  background-color: #6583a8;\r\n  color: white !important;\n}\n.el-main {\r\n  background: #edf5f8;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -36954,7 +37000,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.el-row {\n        margin-bottom: 10px;\n}\n.title__list {\n        font-weight: bold;\n        font-size: 1rem;\n        padding: 10px 0px;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.el-row {\r\n  margin-bottom: 10px;\n}\n.title__list {\r\n  font-weight: bold;\r\n  font-size: 1rem;\r\n  padding: 10px 0px;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -36978,7 +37024,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.el-row {\n        margin-bottom: 10px;\n}\n.title__list {\n        font-weight: bold;\n        font-size: 1rem;\n        padding: 10px 0px;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.el-row {\r\n  margin-bottom: 10px;\n}\n.title__list {\r\n  font-weight: bold;\r\n  font-size: 1rem;\r\n  padding: 10px 0px;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
