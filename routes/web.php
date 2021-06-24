@@ -4,7 +4,9 @@ use App\Http\Controllers\AlmacenesController;
 use App\Http\Controllers\CategoriasController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KitController;
 use App\Http\Controllers\MovimientosController;
+use App\Http\Controllers\MultialmacenesController;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\UnidadesController;
@@ -55,6 +57,7 @@ Route::post('/clientes/guardar', [ClientesController::class, 'store'])->name('cl
 Route::post('/clientes/actualizar', [ClientesController::class, 'update'])->name('clientes.update');
 
 Route::get('/productos', [ProductosController::class, 'index'])->name('productos.index');
+Route::get('/productos/{producto}', [ProductosController::class, 'indexID'])->name('productos.producto');
 Route::post('/productos/guardar', [ProductosController::class, 'store'])->name('productos.store');
 Route::post('/productos/actualizar', [ProductosController::class, 'update'])->name('productos.update');
 
@@ -67,3 +70,21 @@ Route::group(['prefix' => 'multialmacen'] , function (){
     Route::post('/guardar', [ProductosController::class, 'storeMultialmacen'])->name('multialmacen.store');
 });
 
+Route::group(['prefix' => 'multialmacenes'] , function (){
+    Route::get('/', [MultialmacenesController::class, 'index'])->name('multialmacenes.index');
+    Route::post('/guardar', [MultialmacenesController::class, 'store'])->name('multialmacenes.store');
+    Route::post('/actualizar', [MultialmacenesController::class, 'update'])->name('multialmacenes.update');
+    Route::get('/consulta/{id_producto}', [MultialmacenesController::class, 'get'])->name('multialmacenes.get');
+});
+
+Route::group(['prefix' => 'kits'] , function (){
+    Route::get('/', [KitController::class, 'index'])->name('kit.index');
+    Route::post('/guardar', [KitController::class, 'store'])->name('kit.store');
+    Route::post('/actualizar', [KitController::class, 'update'])->name('kit.update');
+});
+
+Route::group(['prefix' => 'movimientos'] , function (){
+    Route::get('/', [MovimientosController::class, 'index'])->name('movimientos.index');
+    Route::post('/guardar', [MovimientosController::class, 'store'])->name('movimientos.store');
+    Route::post('/actualizar', [MovimientosController::class, 'update'])->name('movimientos.update');
+});

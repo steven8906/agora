@@ -32,7 +32,12 @@
                     <b><i class="el-icon-sort c-white" style="vertical-align: baseline"></i></b>Productos
                 </el-menu-item>
             </inertia-link>
-          <inertia-link :href="''">
+          <inertia-link :href="route('multialmacenes.index')">
+            <el-menu-item index="14" class="b-primary-l c-white">
+              <b><i class="el-icon-box c-white" style="vertical-align: baseline"></i></b>Multialmacenes
+            </el-menu-item>
+          </inertia-link>
+          <inertia-link :href="route('kit.index')">
             <el-menu-item index="6" class="b-primary-l c-white">
               <b><i class="el-icon-box c-white" style="vertical-align: baseline"></i></b>Kits
             </el-menu-item>
