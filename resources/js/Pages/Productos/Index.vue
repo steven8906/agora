@@ -22,7 +22,7 @@
                             </template>
                         </el-table-column>
                         <el-table-column label="Categoría" prop="categoria"></el-table-column>
-                        <el-table-column label="Producto" prop="proveedor"></el-table-column>
+                        <el-table-column label="Producto" prop="nombre"></el-table-column>
                         <el-table-column label="Código" prop="codigo"></el-table-column>
                         <el-table-column label="Tipo" prop="tipo"></el-table-column>
                         <el-table-column label="Ubicación" prop="ubicacion"></el-table-column>
@@ -225,28 +225,24 @@
             </el-alert>
             <el-divider></el-divider>
             <el-form ref="formMultialmacen" label-width="150px" :model="modelMultialmacen">
-                <el-form-item label="Almacénes:"
-                              prop="almacenes"
-                              :rules="[{required:true, message:'Campo obligatorio'}]">
-                    <el-select v-model="modelMultialmacen.almacenes" placeholder="Seleccione almacén" multiple filterable clearable>
-                        <el-option v-for="item in almacenes" :key="item.id" :label="item.almacen" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="Stock:"
-                              prop="stock"
-                              :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message:'Campo ingresado debe ser numérico'}]">
-                    <el-input placeholder="Stock" v-model.number="modelMultialmacen.stock" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="Stock minímo:"
-                              prop="stock_minimo"
-                              :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message:'Campo ingresado debe ser numérico'}]">
-                    <el-input placeholder="Stock" v-model.number="modelMultialmacen.stock_minimo" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="Stock máximo:"
-                              prop="stock_maximo"
-                              :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message:'Campo ingresado debe ser numérico'}]">
-                    <el-input placeholder="Stock" v-model.number="modelMultialmacen.stock_maximo" clearable></el-input>
-                </el-form-item>
+                <div v-if="!modelMultialmacen.hasOwnProperty('almacenes')">
+                    <el-form-item :label="item.almacen + ': '"
+                                  prop="almacenes"
+                                  v-for="(item, index) in almacenes" :key="index">
+                        <el-switch v-model="modelMultialmacen[index].condicion" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                        <br>
+                        <br>
+                        <pre>{{modelMultialmacen[index]}}</pre>
+                    </el-form-item>
+                </div>
+                <div v-else>
+                    <el-form-item :label="item.almacen + ': '"
+                                  prop="almacenes"
+                                  v-for="(item, index) in almacenes" :key="index">
+                        <el-switch v-model="modelMultialmacen.almacenes[index].condicion" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                    </el-form-item>
+                </div>
+
                 <error-form :errores="errores" v-show="errores !== null"></error-form>
             </el-form>
             <template #footer>
@@ -285,11 +281,12 @@
                 model: {
                     codigo: this.codigo_barras
                 },
-                modelMultialmacen:null,
+                modelMultialmacen: null,
                 imagen:null,
                 listaArchivo:[],
                 errores: null,
                 loading: false,
+                id_producto:null
             }
         },//bloque obligatorio para paginacion de tabla
         computed:{
@@ -304,6 +301,15 @@
                     this.dataProductos =  this.dataProductos.filter(data => !val || data.nombre.toLowerCase().includes(val.toLowerCase()))
                 }else{
                     this.dataProductos = this.proveedores
+                }
+            },
+            modelMultialmacen: function (val) {
+                console.log(val)
+                if (Object.keys(val).length === 0) {
+                    this.modelMultialmacen.almacenes = [];
+                    this.almacenes.map(item => {
+                        this.modelMultialmacen.almacenes.push({id_almacen: item.id, id_producto:this.id_producto, condicion: false});
+                    });
                 }
             }
         },
@@ -363,8 +369,9 @@
                 axios.get(`/multialmacen/producto/${id_producto}`)
                     .then(res => {
                         this.modalMultialmacen = true;
-                        this.modelMultialmacen = res.data
-                        this.modelMultialmacen.id_producto = id_producto;
+                        if (res.data.length > 0)this.modelMultialmacen = res.data;
+                        else this.modelMultialmacen = {};
+                        this.id_producto = id_producto;
                     })
                     .catch((error) => {
                         let aux = [];
@@ -379,14 +386,7 @@
             guardarMultialmacen(){
                 this.errores = null;
                 this.loading = true
-                const model = {
-                    id_producto : this.modelMultialmacen.id_producto,
-                    almacenes : this.modelMultialmacen.almacenes,
-                    stock : this.modelMultialmacen.stock,
-                    stock_minimo : this.modelMultialmacen.stock_minimo,
-                    stock_maximo : this.modelMultialmacen.stock_maximo,
-                }
-                axios.post(route('multialmacen.store'), model)
+                axios.post(route('multialmacen.store'), this.modelMultialmacen.almacenes)
                     .then((res)=>{
                         this.$notify({
                             title: 'Transacción exitosa',

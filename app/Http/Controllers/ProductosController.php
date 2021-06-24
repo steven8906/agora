@@ -28,6 +28,10 @@ class ProductosController extends Controller
                                             'unidades', 'codigo_barras', 'productos', 'almacenes'));
     }
 
+    public function indexID(Request $request, $producto){
+        return response()->json(['success' => true, 'info' => $this->productosRelacionadosID($producto)]);
+    }
+
     public function store(Request $request)
     {
         $reglas = array(
@@ -97,9 +101,17 @@ class ProductosController extends Controller
         $request->offsetSet('unidad_salida', $request->id_unidad);
         $request->offsetUnset('id_unidad');
         $request->offsetUnset('unidad');
+        $request->offsetUnset('created_at');
+        $request->offsetUnset('updated_at');
         $request->validate($reglas, $mensaje);
         Producto::where('id', $request->only('id'))->update($request->all());
-        return response()->json(array('success' => true, 'info' => $this->productosRelacionados()));
+        return response()->json(array(
+            'success' => true,
+            'info' => array(
+                'productos'     => $this->productosRelacionados(),
+                'codigo_barras' => $this->generarBarras()
+            )
+        ));
     }
 
     public function multialmacenProducto(Request $request, $id_producto){
@@ -107,38 +119,16 @@ class ProductosController extends Controller
     }
 
     public function storeMultialmacen(Request $request){
-        $reglas = array(
-            'id_producto'  => 'numeric|required',
-            'almacenes'    => 'array|required',
-            'stock'        => 'numeric|required',
-            'stock_minimo' => 'numeric|required',
-            'stock_maximo' => 'numeric|required',
-        );
-        $mensaje = array(
-            'required' => 'El campo :attribute, es obligatorio',
-            'numeric'    => 'El campo :attribute, debe ser en formato moneda',
-        );
-        $request->validate($reglas, $mensaje);
         try {
             DB::beginTransaction();
-            Multialmacen::where('id_producto', $request->only('id_producto')['id_producto'])->delete();
-            $almacenes = $request->only('almacenes')['almacenes'];
-            foreach ($almacenes as $almacen){
-                Multialmacen::create([
-                    'id_almacen'   => $almacen,
-                    'id_producto'  => $request->only('id_producto')['id_producto'],
-                    'stock'        => $request->only('stock')['stock'],
-                    'stock_maximo' => $request->only('stock_maximo')['stock_maximo'],
-                    'stock_minimo' => $request->only('stock_minimo')['stock_minimo'],
-                ]);
-            }
+            Multialmacen::upsert($request->all(), ['id_almacen',  'id_producto', 'stock', 'stock_minimo', 'stock_maximo', 'condicion']);
             DB::commit();
             return response()->json(array(
                 'success' => true,
                 'info' => array(
                     'productos'      => $this->productosRelacionados(),
                     'codigo_barras'  => $this->generarBarras(),
-                    'multialmacenes' => $this->verMultialmacenProducto($request->only('id_producto')['id_producto']),
+                    'multialmacenes' => $this->verMultialmacenProducto($request->all()[0]['id_almacen']),
                 )
             ));
         }catch (\Exception $ex){
@@ -156,26 +146,23 @@ class ProductosController extends Controller
                         ->get();
     }
 
+    private function productosRelacionadosID($producto){
+        return Producto::from('productos AS a')
+                        ->select('a.*', 'b.id AS idcategoria', 'b.nombre AS categoria', 'c.id AS idproveedor', 'c.nombre AS proveedor', 'd.id AS id_unidad', 'd.unidad', 'e.id AS id_unidad', 'e.unidad')
+                        ->join('categorias AS b', 'b.id', '=', 'a.idcategoria')
+                        ->join('proveedores AS c', 'c.id', '=', 'a.idproveedor')
+                        ->join('unidades AS d', 'd.id', '=', 'a.unidad_salida')
+                        ->join('unidades AS e', 'e.id', '=', 'a.unidad_entrada')
+                        ->where('a.nombre', 'LIKE', "%{$producto}%")
+                        ->get();
+    }
+
     private function generarBarras(){
         return Str::limit(preg_replace('/[^0-9]/', '', md5(time()) . rand(1000, 10000)), 8, '');
     }
 
     private function verMultialmacenProducto($id_producto){
         $multialmacenes = Multialmacen::where('id_producto', $id_producto)->get();
-        if (count($multialmacenes) > 0){
-            $model_almacenes = array();
-            foreach ($multialmacenes as $multialmacen){
-                array_push($model_almacenes, $multialmacen->id_almacen);
-            }
-            $model = array(
-                'almacenes'   => $model_almacenes,
-                "id_producto" => $multialmacenes[0]->id_producto,
-                "stock"       => $multialmacenes[0]->stock,
-                "stock_minimo"=> $multialmacenes[0]->stock_minimo,
-                "stock_maximo"=> $multialmacenes[0]->stock_maximo,
-            );
-            return $model;
-        }
-        return array();
+        return $multialmacenes;
     }
 }
