@@ -121,17 +121,19 @@ class ProductosController extends Controller
     public function storeMultialmacen(Request $request){
         try {
             DB::beginTransaction();
-            Multialmacen::upsert($request->all(), ['id_almacen',  'id_producto', 'stock', 'stock_minimo', 'stock_maximo', 'condicion']);
+            $model  = isset($request->all()['almacenes']) ? $request->all()['almacenes'] : $request->all();
+            Multialmacen::upsert($model, ['id_almacen', 'id_producto', 'condicion']);
             DB::commit();
             return response()->json(array(
                 'success' => true,
                 'info' => array(
                     'productos'      => $this->productosRelacionados(),
                     'codigo_barras'  => $this->generarBarras(),
-                    'multialmacenes' => $this->verMultialmacenProducto($request->all()[0]['id_almacen']),
+                    'multialmacenes' => $this->verMultialmacenProducto($model[0]['id_almacen']),
                 )
             ));
         }catch (\Exception $ex){
+            DB::rollBack();
             return response()->json(['success' => false, 'info' => $ex->getMessage()], 422);
         }
     }

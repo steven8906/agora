@@ -229,10 +229,9 @@
                     <el-form-item :label="item.almacen + ': '"
                                   prop="almacenes"
                                   v-for="(item, index) in almacenes" :key="index">
-                        <el-switch v-model="modelMultialmacen[index].condicion" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                        <el-switch :modelValue="modelMultialmacen[index].condicion == 1" v-model="modelMultialmacen[index].condicion" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
                         <br>
                         <br>
-                        <pre>{{modelMultialmacen[index]}}</pre>
                     </el-form-item>
                 </div>
                 <div v-else>
@@ -386,7 +385,7 @@
             guardarMultialmacen(){
                 this.errores = null;
                 this.loading = true
-                axios.post(route('multialmacen.store'), this.modelMultialmacen.almacenes)
+                axios.post(route('multialmacen.store'), this.modelMultialmacen)
                     .then((res)=>{
                         this.$notify({
                             title: 'Transacción exitosa',
