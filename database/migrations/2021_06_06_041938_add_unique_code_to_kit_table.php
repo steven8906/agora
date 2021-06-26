@@ -13,7 +13,7 @@ class AddUniqueCodeToKitTable extends Migration
      */
     public function up()
     {
-        Schema::table('kit', function (Blueprint $table) {
+        Schema::table('kits', function (Blueprint $table) {
         $table->string('token')->unique()->nullable(false);
         });
     }
