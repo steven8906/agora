@@ -22,43 +22,41 @@ class KitController extends Controller
         $productos     = $this->productosRelacionados();
         $codigo_barras = $this->generarBarras();
         $unidades      = Unidades::all();
-        $kits          = Kit::all();
+        $kits          = $this->getKits();
         return Inertia::render('Kits/Index', compact('usuario', 'unidades', 'codigo_barras', 'productos', 'kits'));
     }
 
     public function store(Request $request)
     {
-        $reglas = array(
-            'nombre' => 'required',
-        );
         try {
             $productos = $request->get('productos');
             DB::beginTransaction();
             $uniqueid = uniqid();
+            Kit::where('codigo', $request->get('codigo'))->delete();
             foreach ($productos as $producto){
-                Kit::create([
-                    'codigo'        => $request->get('codigo'),
-                    'id_producto'   => $producto,
-                    'nombre'        => $request->get('nombre'),
-                    'precio_venta'  => $request->get('precio_venta'),
-                    'precio_compra' => $request->get('precio_compra'),
-                    'descripcion'   => $request->get('descripcion'),
-                    'condicion'     => true,
-                    'ubicacion'     => $request->get('ubicacion'),
-                    'token'         => $uniqueid
-                ]);
+                if (isset($producto['id'])){
+                    Kit::create([
+                        'codigo'             => $request->get('codigo'),
+                        'id_producto'        => $producto['id'],
+                        'nombre'             => $request->get('nombre'),
+                        'precio_venta'       => $request->get('precio_venta'),
+                        'precio_compra'      => $request->get('precio_compra'),
+                        'precio_minimo'      => $request->get('precio_minimo'),
+                        'precio_liquidacion' => $request->get('precio_liquidacion'),
+                        'precio_mayorista'   => $request->get('precio_mayorista'),
+                        'descripcion'        => $request->get('descripcion'),
+                        'condicion'          => true,
+                        'ubicacion'          => $request->get('ubicacion'),
+                        'token'              => $uniqueid
+                    ]);
+                }
             }
             DB::commit();
-            return response()->json(array('success' => true, 'info' => Kit::all()));
+            return response()->json(array('success' => true, 'info' => $this->getKits()));
         }catch (\Exception $ex){
+            DB::rollBack();
             return response()->json(array('success' => false, 'info' => $ex->getMessage()));
         }
-        dd($productos);
-
-        $mensaje = array('required' => 'El campo :attribute, es obligatorio');
-        $request->validate($reglas, $mensaje);
-        Kit::create($request->only('nombre', 'descripcion'));
-        return response()->json(array('success' => true, 'info' => Kit::all()));
     }
 
     public function show(Kit $kit)
@@ -79,6 +77,27 @@ class KitController extends Controller
             ->join('unidades AS d', 'd.id', '=', 'a.unidad_salida')
             ->join('unidades AS e', 'e.id', '=', 'a.unidad_entrada')
             ->get();
+    }
+
+    private function getKits(){
+        return Kit::from('kits AS a')
+                    ->selectRaw('ANY_VALUE ( a.condicion ) AS condicion,
+                                ANY_VALUE ( a.codigo ) AS codigo,
+                                ANY_VALUE ( a.token ) AS token,
+                                ANY_VALUE ( a.nombre ) AS nombre,
+                                ANY_VALUE ( a.descripcion ) AS descripcion,
+                                ANY_VALUE ( a.ubicacion ) AS ubicacion,
+                                GROUP_CONCAT( b.nombre SEPARATOR "|") AS producto,
+	                            GROUP_CONCAT( b.id SEPARATOR "|" ) AS id_producto,
+                                GROUP_CONCAT( b.path_imagen SEPARATOR "|" ) AS path_imagen,
+                                ANY_VALUE ( a.precio_compra ) AS precio_compra,
+                                ANY_VALUE ( a.precio_venta ) AS precio_venta,
+                                ANY_VALUE ( a.precio_minimo ) AS precio_minimo,
+                                ANY_VALUE ( a.precio_mayorista ) AS precio_mayorista,
+                                ANY_VALUE ( a.precio_liquidacion ) AS precio_liquidacion')
+                    ->join('productos AS b', 'b.id', '=', 'a.id_producto')
+                    ->groupBy('a.codigo')
+                    ->get();
     }
 
     private function generarBarras(){
