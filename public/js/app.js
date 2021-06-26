@@ -23521,6 +23521,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       dataKits: this.kits,
       modalForm: false,
+      disableForm: false,
       //bloque obligatorio para paginacion de tabla
       page: 1,
       pageSize: 10,
@@ -23560,37 +23561,66 @@ __webpack_require__.r(__webpack_exports__);
 
       this.loading = true;
       var url = this.model.hasOwnProperty('id') ? 'kit.update' : 'kit.store';
-      axios.post(route(url), this.model).then(function (res) {
-        _this.$notify({
-          title: 'Transacción exitosa',
-          message: 'Solicitud realizada con éxito',
-          type: 'success'
-        });
+      this.$refs["form"].validate(function (valid) {
+        if (valid) {
+          axios.post(route(url), _this.model).then(function (res) {
+            _this.$notify({
+              title: 'Transacción exitosa',
+              message: 'Solicitud realizada con éxito',
+              type: 'success'
+            });
 
-        _this.dataKits = res.data.info;
-        _this.errores = null;
-        _this.modalForm = false;
+            _this.dataKits = res.data.info;
+            _this.errores = null;
+            _this.modalForm = false;
 
-        _this.limpiarModelo();
-      })["catch"](function (error) {
-        var aux = [];
-        var info = Object.values(error.response.data.errors);
-        info.forEach(function (item) {
-          return aux.push(item[0]);
-        });
-        _this.errores = aux;
-      })["finally"](function () {
-        return setTimeout(function () {
-          _this.loading = false;
-        }, 1000);
+            _this.limpiarModelo();
+          })["catch"](function (error) {
+            var aux = [];
+            var info = Object.values(error.response.data.errors);
+            info.forEach(function (item) {
+              return aux.push(item[0]);
+            });
+            _this.errores = aux;
+          })["finally"](function () {
+            return setTimeout(function () {
+              _this.loading = false;
+            }, 1000);
+          });
+        } else {
+          console.log('error submit!!');
+          setTimeout(function () {
+            _this.loading = false;
+          }, 1000);
+        }
       });
     },
-    editarModal: function editarModal(row) {
+    editarVerModal: function editarVerModal(row) {
+      var _this2 = this;
+
       this.modalForm = true;
-      var model = this.dataKits.filter(function (kit) {
-        return kit.id == row.id;
+      var data = this.dataKits.filter(function (kit) {
+        return kit.id === row.id;
       })[0];
-      this.model = model;
+      this.model = row;
+      var auxModel = {
+        id_producto: data.id_producto.split('|'),
+        path_imagen: data.path_imagen.split('|'),
+        producto: data.producto.split('|')
+      };
+      var finalModel = [];
+
+      for (var i = 0; i < auxModel.id_producto.length; i++) {
+        finalModel.push({
+          icon: auxModel.path_imagen[i],
+          key: parseInt(auxModel.id_producto[i]),
+          value: auxModel.producto[i]
+        });
+      }
+
+      finalModel.forEach(function (item) {
+        return _this2.handleSelect(item);
+      });
     },
     desactivar: function desactivar(row) {
       console.log(row.id);
@@ -23602,16 +23632,32 @@ __webpack_require__.r(__webpack_exports__);
     //bloque obligatorio para paginacion de tabla
     limpiarModelo: function limpiarModelo() {
       this.model = {};
+      this.$refs["form"].resetFields();
     },
     handleSelect: function handleSelect(item) {
+      if (!this.model.hasOwnProperty('imagenes')) this.model.imagenes = [];
+      this.model.productos = this.productos;
       var productos = this.model.productos.filter(function (producto) {
         return producto == item.key;
       });
 
       if (productos.length === 0) {
         this.model.productos.push(item.key);
-        this.model.imagenes.push(item.icon);
+        this.model.imagenes.push({
+          icon: item.icon,
+          key: item.key,
+          nombre: item.value
+        });
       }
+    },
+    removeProduct: function removeProduct(image) {
+      this.model.productos = this.model.productos.filter(function (producto) {
+        return producto.id != image.key;
+      });
+      this.model.imagenes = this.model.imagenes.filter(function (item) {
+        return item.key != image.key;
+      });
+      console.log(this.model.productos);
     },
     buscarProducto: function buscarProducto(query, appendItems) {
       if (query.length >= 3) {
@@ -32258,22 +32304,38 @@ var _hoisted_2 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNod
 
 var _hoisted_3 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Inactivo");
 
-var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Editar ");
-
-var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Desactivar");
-
-var _hoisted_6 = {
+var _hoisted_4 = {
   style: {
     "text-align": "center"
   }
 };
-var _hoisted_7 = {
+var _hoisted_5 = {
+  style: {
+    "padding": "14px"
+  }
+};
+var _hoisted_6 = {
+  "class": "bottom",
+  style: {
+    "text-align": "center"
+  }
+};
+
+var _hoisted_7 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+/* HOISTED */
+);
+
+var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+/* HOISTED */
+);
+
+var _hoisted_9 = {
   "class": "dialog-footer"
 };
 
-var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Cancelar");
+var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Cancelar");
 
-var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
+var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
 
 (0,vue__WEBPACK_IMPORTED_MODULE_0__.popScopeId)();
 
@@ -32308,7 +32370,9 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
 
   var _component_el_form_item = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-form-item");
 
-  var _component_el_image = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-image");
+  var _component_el_collapse_item = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-collapse-item");
+
+  var _component_el_collapse = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-collapse");
 
   var _component_el_form = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-form");
 
@@ -32331,8 +32395,9 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
           return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
             type: "primary",
             icon: "el-icon-edit",
-            onClick: _cache[1] || (_cache[1] = function ($event) {
-              return $data.modalForm = true;
+            onClick: _cache[1] || (_cache[1] = function () {
+              $data.modalForm = true;
+              $data.disableForm = false;
             })
           }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
             type: "primary",
@@ -32395,11 +32460,20 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                         /* STABLE */
 
                       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
-                        label: "Categoría",
-                        prop: "nombre"
+                        label: "Código",
+                        prop: "codigo"
                       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
-                        label: "Descripción",
-                        prop: "descripcion"
+                        label: "Kit",
+                        prop: "kit"
+                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
+                        label: "Productos",
+                        prop: "producto"
+                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
+                        label: "Precio compra",
+                        prop: "precio_compra"
+                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
+                        label: "Precio venta",
+                        prop: "precio_venta"
                       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
                         align: "right"
                       }, {
@@ -32418,20 +32492,24 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                         "default": _withId(function (scope) {
                           return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
                             size: "mini",
+                            type: "primary",
+                            icon: "el-icon-search",
+                            onClick: function onClick() {
+                              $options.editarVerModal(scope.row);
+                              $data.disableForm = true;
+                            }
+                          }, null, 8
+                          /* PROPS */
+                          , ["onClick"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+                            size: "mini",
                             type: "warning",
                             icon: "el-icon-edit",
-                            onClick: function onClick($event) {
-                              return $options.editarModal(scope.row);
+                            onClick: function onClick() {
+                              $options.editarVerModal(scope.row);
+                              $data.disableForm = false;
                             }
-                          }, {
-                            "default": _withId(function () {
-                              return [_hoisted_4];
-                            }),
-                            _: 2
-                            /* DYNAMIC */
-
-                          }, 1032
-                          /* PROPS, DYNAMIC_SLOTS */
+                          }, null, 8
+                          /* PROPS */
                           , ["onClick"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_popconfirm, {
                             confirmButtonText: "Aceptar",
                             cancelButtonText: "Cancelar",
@@ -32447,13 +32525,6 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                                 size: "mini",
                                 type: "danger",
                                 icon: "el-icon-delete"
-                              }, {
-                                "default": _withId(function () {
-                                  return [_hoisted_5];
-                                }),
-                                _: 1
-                                /* STABLE */
-
                               })];
                             }),
                             _: 2
@@ -32479,7 +32550,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                     type: "warning",
                     description: "No existen datos para mostrar",
                     "show-icon": ""
-                  })), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_pagination, {
+                  })), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_pagination, {
                     background: "",
                     layout: "prev, pager, next",
                     onCurrentChange: $options.handleCurrentChange,
@@ -32503,21 +32574,21 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
         /* STABLE */
 
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("        Tabla y paginacion"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_dialog, {
-        title: "Formulario de Categorías",
+        title: "Formulario de Armado de kit",
         modelValue: $data.modalForm,
-        "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
+        "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
           return $data.modalForm = $event;
         }),
-        width: "30%"
+        width: "60%"
       }, {
         footer: _withId(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
-            onClick: _cache[10] || (_cache[10] = function ($event) {
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+            onClick: _cache[13] || (_cache[13] = function ($event) {
               return $data.modalForm = false;
             })
           }, {
             "default": _withId(function () {
-              return [_hoisted_8];
+              return [_hoisted_10];
             }),
             _: 1
             /* STABLE */
@@ -32527,7 +32598,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
             onClick: $options.guardar
           }, {
             "default": _withId(function () {
-              return [_hoisted_9];
+              return [_hoisted_11];
             }),
             _: 1
             /* STABLE */
@@ -32540,11 +32611,12 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
           return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form, {
             ref: "form",
             "label-width": "150px",
-            model: $data.model
+            model: $data.model,
+            disabled: $data.disableForm
           }, {
             "default": _withId(function () {
               return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
-                label: "Código de barras:"
+                label: "Producto:"
               }, {
                 "default": _withId(function () {
                   return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_autocomplete, {
@@ -32563,29 +32635,65 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                 _: 1
                 /* STABLE */
 
-              }), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.model.imagenes, function (image, index) {
-                return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_el_image, {
-                  key: index,
-                  style: {
-                    "width": "100px",
-                    "height": "100px"
-                  },
-                  "preview-src-list": [image],
-                  src: image
-                }, null, 8
-                /* PROPS */
-                , ["preview-src-list", "src"]);
-              }), 128
-              /* KEYED_FRAGMENT */
-              )), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_row, {
+                gutter: "6"
+              }, {
+                "default": _withId(function () {
+                  return [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.model.imagenes, function (image, index) {
+                    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_el_col, {
+                      span: 6,
+                      key: index
+                    }, {
+                      "default": _withId(function () {
+                        return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_card, {
+                          "body-style": {
+                            padding: '0px'
+                          }
+                        }, {
+                          "default": _withId(function () {
+                            return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("img", {
+                              src: image.icon,
+                              "class": "image"
+                            }, null, 8
+                            /* PROPS */
+                            , ["src"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(image.nombre), 1
+                            /* TEXT */
+                            ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+                              icon: "el-icon-error",
+                              circle: "",
+                              onClick: function onClick($event) {
+                                return $options.removeProduct(image);
+                              }
+                            }, null, 8
+                            /* PROPS */
+                            , ["onClick"])])])];
+                          }),
+                          _: 2
+                          /* DYNAMIC */
+
+                        }, 1024
+                        /* DYNAMIC_SLOTS */
+                        )];
+                      }),
+                      _: 2
+                      /* DYNAMIC */
+
+                    }, 1024
+                    /* DYNAMIC_SLOTS */
+                    );
+                  }), 128
+                  /* KEYED_FRAGMENT */
+                  ))];
+                }),
+                _: 1
+                /* STABLE */
+
+              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
                 label: "Código de barras:",
                 prop: "codigo",
                 rules: [{
                   required: true,
                   message: 'Campo obligatorio'
-                }, {
-                  type: 'number',
-                  message: 'Campo ingresado debe ser numérico'
                 }]
               }, {
                 "default": _withId(function () {
@@ -32595,21 +32703,14 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                     "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
                       return $data.model.codigo = $event;
                     }),
-                    "model-value": $props.codigo_barras,
+                    modelModifiers: {
+                      number: true
+                    },
                     clearable: "",
                     disabled: ""
-                  }, {
-                    "default": _withId(function () {
-                      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.codigo_barras), 1
-                      /* TEXT */
-                      )];
-                    }),
-                    _: 1
-                    /* STABLE */
-
-                  }, 8
+                  }, null, 8
                   /* PROPS */
-                  , ["modelValue", "model-value"])];
+                  , ["modelValue"])];
                 }),
                 _: 1
                 /* STABLE */
@@ -32644,7 +32745,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                   required: true,
                   message: 'Campo obligatorio'
                 }, {
-                  type: 'number',
+                  pattern: /[+-]?([0-9]*[.])?[0-9]+$/,
                   message: 'Campo ingresado debe ser numérico'
                 }]
               }, {
@@ -32666,14 +32767,16 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                 _: 1
                 /* STABLE */
 
-              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+              }, 8
+              /* PROPS */
+              , ["rules"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
                 label: "Precio venta:",
                 prop: "precio_venta",
                 rules: [{
                   required: true,
                   message: 'Campo obligatorio'
                 }, {
-                  type: 'number',
+                  pattern: /[+-]?([0-9]*[.])?[0-9]+$/,
                   message: 'Campo ingresado debe ser numérico'
                 }]
               }, {
@@ -32695,7 +32798,126 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                 _: 1
                 /* STABLE */
 
-              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+              }, 8
+              /* PROPS */
+              , ["rules"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_collapse, {
+                style: {
+                  "width": "90%",
+                  "margin": "auto"
+                }
+              }, {
+                "default": _withId(function () {
+                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_collapse_item, {
+                    title: "Precio mínimo",
+                    name: "2"
+                  }, {
+                    "default": _withId(function () {
+                      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+                        label: "Precio mínimo:",
+                        prop: "precio_minimo",
+                        rules: [{
+                          pattern: /[+-]?([0-9]*[.])?[0-9]+$/,
+                          message: 'Campo ingresado debe ser numérico'
+                        }]
+                      }, {
+                        "default": _withId(function () {
+                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
+                            placeholder: "Precio mínimo",
+                            modelValue: $data.model.precio_minimo,
+                            "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
+                              return $data.model.precio_minimo = $event;
+                            }),
+                            clearable: ""
+                          }, null, 8
+                          /* PROPS */
+                          , ["modelValue"])];
+                        }),
+                        _: 1
+                        /* STABLE */
+
+                      }, 8
+                      /* PROPS */
+                      , ["rules"])];
+                    }),
+                    _: 1
+                    /* STABLE */
+
+                  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_collapse_item, {
+                    title: "Precio liquidación",
+                    name: "3"
+                  }, {
+                    "default": _withId(function () {
+                      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+                        label: "Precio liquidación:",
+                        prop: "precio_liquidacion",
+                        rules: [{
+                          pattern: /[+-]?([0-9]*[.])?[0-9]+$/,
+                          message: 'Campo ingresado debe ser numérico'
+                        }]
+                      }, {
+                        "default": _withId(function () {
+                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
+                            placeholder: "Precio liquidación",
+                            modelValue: $data.model.precio_liquidacion,
+                            "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
+                              return $data.model.precio_liquidacion = $event;
+                            }),
+                            clearable: ""
+                          }, null, 8
+                          /* PROPS */
+                          , ["modelValue"])];
+                        }),
+                        _: 1
+                        /* STABLE */
+
+                      }, 8
+                      /* PROPS */
+                      , ["rules"])];
+                    }),
+                    _: 1
+                    /* STABLE */
+
+                  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_collapse_item, {
+                    title: "Precio mayorista",
+                    name: "4"
+                  }, {
+                    "default": _withId(function () {
+                      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+                        label: "Precio mayorista:",
+                        prop: "precio_mayorista",
+                        rules: [{
+                          pattern: /[+-]?([0-9]*[.])?[0-9]+$/,
+                          message: 'Campo ingresado debe ser numérico'
+                        }]
+                      }, {
+                        "default": _withId(function () {
+                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
+                            placeholder: "Precio mayorista",
+                            modelValue: $data.model.precio_mayorista,
+                            "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
+                              return $data.model.precio_mayorista = $event;
+                            }),
+                            clearable: ""
+                          }, null, 8
+                          /* PROPS */
+                          , ["modelValue"])];
+                        }),
+                        _: 1
+                        /* STABLE */
+
+                      }, 8
+                      /* PROPS */
+                      , ["rules"])];
+                    }),
+                    _: 1
+                    /* STABLE */
+
+                  })];
+                }),
+                _: 1
+                /* STABLE */
+
+              }), _hoisted_7, _hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
                 label: "Descripción:",
                 prop: "descripcion",
                 rules: [{
@@ -32707,7 +32929,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                   return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
                     placeholder: "Descripción",
                     modelValue: $data.model.descripcion,
-                    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
+                    "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
                       return $data.model.descripcion = $event;
                     }),
                     clearable: ""
@@ -32730,7 +32952,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                   return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
                     placeholder: "Ubicación",
                     modelValue: $data.model.ubicacion,
-                    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
+                    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
                       return $data.model.ubicacion = $event;
                     }),
                     clearable: ""
@@ -32748,7 +32970,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
 
           }, 8
           /* PROPS */
-          , ["model"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_error_form, {
+          , ["model", "disabled"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_error_form, {
             errores: $data.errores
           }, null, 8
           /* PROPS */
