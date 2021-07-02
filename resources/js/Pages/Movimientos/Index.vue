@@ -1,7 +1,6 @@
 <template>
     <app-main selected="6" titulo="Movimientos" :usuario="usuario">
 
-        {{multipleSelection}}
         <el-button-group>
             <el-button type="primary" icon="el-icon-edit" @click="modalForm = true"></el-button>
             <el-button type="primary" icon="el-icon-paperclip"></el-button>
@@ -56,16 +55,49 @@
                 </el-card>
             </el-col>
         </el-row>
-        <el-dialog title="Movimientos entre almacenes" v-model="modalForm" width="40%">
+        <el-dialog title="Movimientos entre almacenes" v-model="modalForm" width="40%" lock-scroll="false">
             <el-form ref="form" label-width="150px" :model="model" :disabled="disableForm">
                 <el-form-item label="Tipo de movimiento:"
                               prop="tipoMovimiento"
                               :rules="[{required:true, message:'Seleccione una opcion'}]">
                     <el-radio-group v-model="model.tipoMovimiento">
-                        <el-radio label="Movimiento estandar" border>Movimiento estandar</el-radio>
-                        <el-radio label="Movimiento regular" border>Movimiento regular &nbsp;&nbsp;</el-radio>
+                        <el-radio label="ENTRE_ALMACENES" border>Movimiento entre almacenes&nbsp;&nbsp;&nbsp;</el-radio>
+                        <br>
+                        <el-radio label="REGULAR" border>Movimiento estandar o regular</el-radio>
                     </el-radio-group>
                 </el-form-item>
+                <div v-if="model.tipoMovimiento=='ENTRE_ALMACENES'">
+                    <el-col :span="10">
+                        <div style="height: 100px;">
+                            <el-steps  direction="vertical">
+                                <el-step title="Almacén de salida"></el-step>
+                                <el-step title="Almacén de destino"></el-step>
+                            </el-steps>
+                        </div>
+                    </el-col>
+                    <el-col :span="14">
+                        <el-form-item :rules="[{required:true, message:'Seleccione una opcion',trigger:'change'}]">
+                            <el-select v-model="model.almacenEntrada" placeholder="Seleccione...">
+                                <el-option
+                                    v-for="item in dataAlmacenes"
+                                    :key="item.id"
+                                    :label="item.almacen"
+                                    :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item :rules="[{required:true, message:'Seleccione una opcion',trigger:'change'}]">
+                            <el-select v-model="model.almacenDestino" placeholder="Seleccione...">
+                                <el-option
+                                    v-for="item in dataAlmacenes"
+                                    :key="item.id"
+                                    :label="item.almacen"
+                                    :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </div>
             </el-form>
             <br>
             <template #footer>
@@ -84,14 +116,18 @@
     import AppMain from "@/Layouts/AppMain";
     import ErrorForm from "@/Pages/Componentes/ErrorForm";
     import Cargando from "@/Pages/Componentes/Cargando";
+    import axios from "axios";
     export default {
         name: "Index",
-        props:['usuario', 'unidades', 'productos', 'movimientos'],
+        props:['usuario', 'unidades', 'productos', 'movimientos','almacenes'],
         components:{AppMain, ErrorForm, Cargando},
         data(){
             return{
                 model:{
                     tipoMovimiento:"",
+                    almacenEntrada:"",
+                    almacenDestino:"",
+                    productoSeleccion: [],
                 },
                 //bloque obligatorio para paginacion de tabla
                 page: 1,
@@ -99,12 +135,12 @@
                 total: 0,
                 search: "",
                 //bloque obligatorio para paginacion de tabla
-                disableForm:false,
+                disableForm:true,
                 modalForm: false,
                 errores: null,
                 loading: false,
                 dataProductos: this.productos,
-                multipleSelection: [],
+                dataAlmacenes: this.almacenes,
             }
         },
         computed:{
@@ -128,13 +164,48 @@
         },
         methods:{
             guardar(){
-                this.$refs["form"].validate((valid)=>{
-                    if(valid){
-                        console.log(this.model.tipoMovimiento)
-                    }else{
-                        console.log("falló")
-                    }
-                });
+                if(this.model.tipoMovimiento = 'ENTRE_ALMACENES') {
+                    this.$refs["form"].validate((valid) => {
+                        if (valid) {
+                            axios.post(route('movimientos.store'),this.model)
+                                .then((res) => {
+                                    this.$notify({
+                                        title: 'Transacción exitosa',
+                                        message: 'Solicitud realizada con éxito',
+                                        type: 'success'
+                                    });
+                                    this.dataCategorias = res.data.info;
+                                    this.errores = null;
+                                    this.modalForm = false;
+                                    this.limpiarModelo();
+                                })
+                                .catch((error) => {
+                                    let aux = [];
+                                    let info = Object.values(error.response.data.errors);
+                                    info.forEach((item) => aux.push(item[0]));
+                                    this.errores = aux;
+                                })
+                                .finally(() =>
+                                    setTimeout(() => {
+                                        this.loading = false
+                                    }, 1000))
+                        } else {
+                            console.log('error submit!!');
+                            setTimeout(() => {
+                                this.loading = false
+                            }, 1000)
+                        }
+                    });
+                }
+                if(this.model.tipoMovimiento = 'REGULAR') {
+                    this.$refs["form"].validate((valid) => {
+                        if (valid) {
+                            console.log(this.model.tipoMovimiento)
+                        } else {
+                            console.log("falló")
+                        }
+                    });
+                }
             },
             //bloque obligatorio para paginacion de tabla
             handleCurrentChange(val) {
@@ -145,7 +216,12 @@
                 this.model = {};
             },
             handleSelectionChange(val) {
-                this.multipleSelection = val;
+                this.model.productoSeleccion = val;
+                if(this.model.productoSeleccion.length>0){
+                    this.disableForm = false;
+                }else if(this.model.productoSeleccion.length==0){
+                    this.disableForm = true;
+                }
             }
         }
     }

@@ -23697,12 +23697,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Layouts_AppMain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/Layouts/AppMain */ "./resources/js/Layouts/AppMain.vue");
 /* harmony import */ var _Pages_Componentes_ErrorForm__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @/Pages/Componentes/ErrorForm */ "./resources/js/Pages/Componentes/ErrorForm.vue");
 /* harmony import */ var _Pages_Componentes_Cargando__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @/Pages/Componentes/Cargando */ "./resources/js/Pages/Componentes/Cargando.vue");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_3__);
+
 
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Index",
-  props: ['usuario', 'unidades', 'productos', 'movimientos'],
+  props: ['usuario', 'unidades', 'productos', 'movimientos', 'almacenes'],
   components: {
     AppMain: _Layouts_AppMain__WEBPACK_IMPORTED_MODULE_0__.default,
     ErrorForm: _Pages_Componentes_ErrorForm__WEBPACK_IMPORTED_MODULE_1__.default,
@@ -23711,7 +23714,10 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       model: {
-        tipoMovimiento: ""
+        tipoMovimiento: "",
+        almacenEntrada: "",
+        almacenDestino: "",
+        productoSeleccion: []
       },
       //bloque obligatorio para paginacion de tabla
       page: 1,
@@ -23719,12 +23725,12 @@ __webpack_require__.r(__webpack_exports__);
       total: 0,
       search: "",
       //bloque obligatorio para paginacion de tabla
-      disableForm: false,
+      disableForm: true,
       modalForm: false,
       errores: null,
       loading: false,
       dataProductos: this.productos,
-      multipleSelection: []
+      dataAlmacenes: this.almacenes
     };
   },
   computed: {
@@ -23752,13 +23758,51 @@ __webpack_require__.r(__webpack_exports__);
     guardar: function guardar() {
       var _this = this;
 
-      this.$refs["form"].validate(function (valid) {
-        if (valid) {
-          console.log(_this.model.tipoMovimiento);
-        } else {
-          console.log("falló");
-        }
-      });
+      if (this.model.tipoMovimiento = 'ENTRE_ALMACENES') {
+        this.$refs["form"].validate(function (valid) {
+          if (valid) {
+            axios__WEBPACK_IMPORTED_MODULE_3___default().post(route('movimientos.store'), _this.model).then(function (res) {
+              _this.$notify({
+                title: 'Transacción exitosa',
+                message: 'Solicitud realizada con éxito',
+                type: 'success'
+              });
+
+              _this.dataCategorias = res.data.info;
+              _this.errores = null;
+              _this.modalForm = false;
+
+              _this.limpiarModelo();
+            })["catch"](function (error) {
+              var aux = [];
+              var info = Object.values(error.response.data.errors);
+              info.forEach(function (item) {
+                return aux.push(item[0]);
+              });
+              _this.errores = aux;
+            })["finally"](function () {
+              return setTimeout(function () {
+                _this.loading = false;
+              }, 1000);
+            });
+          } else {
+            console.log('error submit!!');
+            setTimeout(function () {
+              _this.loading = false;
+            }, 1000);
+          }
+        });
+      }
+
+      if (this.model.tipoMovimiento = 'REGULAR') {
+        this.$refs["form"].validate(function (valid) {
+          if (valid) {
+            console.log(_this.model.tipoMovimiento);
+          } else {
+            console.log("falló");
+          }
+        });
+      }
     },
     //bloque obligatorio para paginacion de tabla
     handleCurrentChange: function handleCurrentChange(val) {
@@ -23769,7 +23813,13 @@ __webpack_require__.r(__webpack_exports__);
       this.model = {};
     },
     handleSelectionChange: function handleSelectionChange(val) {
-      this.multipleSelection = val;
+      this.model.productoSeleccion = val;
+
+      if (this.model.productoSeleccion.length > 0) {
+        this.disableForm = false;
+      } else if (this.model.productoSeleccion.length == 0) {
+        this.disableForm = true;
+      }
     }
   }
 });
@@ -33135,21 +33185,34 @@ var _hoisted_3 = {
   }
 };
 
-var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Movimiento estandar");
+var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Movimiento entre almacenes   ");
 
-var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Movimiento regular   ");
-
-var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
 /* HOISTED */
 );
 
+var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Movimiento estandar o regular");
+
 var _hoisted_7 = {
+  key: 0
+};
+var _hoisted_8 = {
+  style: {
+    "height": "100px"
+  }
+};
+
+var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+/* HOISTED */
+);
+
+var _hoisted_10 = {
   "class": "dialog-footer"
 };
 
-var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Cancelar");
+var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Cancelar");
 
-var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
+var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
 
 (0,vue__WEBPACK_IMPORTED_MODULE_0__.popScopeId)();
 
@@ -33182,6 +33245,14 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
 
   var _component_el_form_item = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-form-item");
 
+  var _component_el_step = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-step");
+
+  var _component_el_steps = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-steps");
+
+  var _component_el_option = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-option");
+
+  var _component_el_select = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-select");
+
   var _component_el_form = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-form");
 
   var _component_error_form = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("error-form");
@@ -33198,9 +33269,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
     usuario: $props.usuario
   }, {
     "default": _withId(function () {
-      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.multipleSelection) + " ", 1
-      /* TEXT */
-      ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button_group, null, {
+      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button_group, null, {
         "default": _withId(function () {
           return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
             type: "primary",
@@ -33305,19 +33374,20 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_dialog, {
         title: "Movimientos entre almacenes",
         modelValue: $data.modalForm,
-        "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+        "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
           return $data.modalForm = $event;
         }),
-        width: "40%"
+        width: "40%",
+        "lock-scroll": "false"
       }, {
         footer: _withId(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
-            onClick: _cache[3] || (_cache[3] = function ($event) {
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+            onClick: _cache[5] || (_cache[5] = function ($event) {
               return $data.modalForm = false;
             })
           }, {
             "default": _withId(function () {
-              return [_hoisted_8];
+              return [_hoisted_11];
             }),
             _: 1
             /* STABLE */
@@ -33327,7 +33397,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
             onClick: $options.guardar
           }, {
             "default": _withId(function () {
-              return [_hoisted_9];
+              return [_hoisted_12];
             }),
             _: 1
             /* STABLE */
@@ -33361,7 +33431,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                   }, {
                     "default": _withId(function () {
                       return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_radio, {
-                        label: "Movimiento estandar",
+                        label: "ENTRE_ALMACENES",
                         border: ""
                       }, {
                         "default": _withId(function () {
@@ -33370,12 +33440,12 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                         _: 1
                         /* STABLE */
 
-                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_radio, {
-                        label: "Movimiento regular",
+                      }), _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_radio, {
+                        label: "REGULAR",
                         border: ""
                       }, {
                         "default": _withId(function () {
-                          return [_hoisted_5];
+                          return [_hoisted_6];
                         }),
                         _: 1
                         /* STABLE */
@@ -33392,14 +33462,121 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                 _: 1
                 /* STABLE */
 
-              })];
+              }), $data.model.tipoMovimiento == 'ENTRE_ALMACENES' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_col, {
+                span: 10
+              }, {
+                "default": _withId(function () {
+                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_steps, {
+                    direction: "vertical"
+                  }, {
+                    "default": _withId(function () {
+                      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_step, {
+                        title: "Almacén de salida"
+                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_step, {
+                        title: "Almacén de destino"
+                      })];
+                    }),
+                    _: 1
+                    /* STABLE */
+
+                  })])];
+                }),
+                _: 1
+                /* STABLE */
+
+              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_col, {
+                span: 14
+              }, {
+                "default": _withId(function () {
+                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+                    rules: [{
+                      required: true,
+                      message: 'Seleccione una opcion',
+                      trigger: 'change'
+                    }]
+                  }, {
+                    "default": _withId(function () {
+                      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_select, {
+                        modelValue: $data.model.almacenEntrada,
+                        "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+                          return $data.model.almacenEntrada = $event;
+                        }),
+                        placeholder: "Seleccione..."
+                      }, {
+                        "default": _withId(function () {
+                          return [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.dataAlmacenes, function (item) {
+                            return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_el_option, {
+                              key: item.id,
+                              label: item.almacen,
+                              value: item.id
+                            }, null, 8
+                            /* PROPS */
+                            , ["label", "value"]);
+                          }), 128
+                          /* KEYED_FRAGMENT */
+                          ))];
+                        }),
+                        _: 1
+                        /* STABLE */
+
+                      }, 8
+                      /* PROPS */
+                      , ["modelValue"])];
+                    }),
+                    _: 1
+                    /* STABLE */
+
+                  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+                    rules: [{
+                      required: true,
+                      message: 'Seleccione una opcion',
+                      trigger: 'change'
+                    }]
+                  }, {
+                    "default": _withId(function () {
+                      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_select, {
+                        modelValue: $data.model.almacenDestino,
+                        "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+                          return $data.model.almacenDestino = $event;
+                        }),
+                        placeholder: "Seleccione..."
+                      }, {
+                        "default": _withId(function () {
+                          return [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.dataAlmacenes, function (item) {
+                            return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_el_option, {
+                              key: item.id,
+                              label: item.almacen,
+                              value: item.id
+                            }, null, 8
+                            /* PROPS */
+                            , ["label", "value"]);
+                          }), 128
+                          /* KEYED_FRAGMENT */
+                          ))];
+                        }),
+                        _: 1
+                        /* STABLE */
+
+                      }, 8
+                      /* PROPS */
+                      , ["modelValue"])];
+                    }),
+                    _: 1
+                    /* STABLE */
+
+                  })];
+                }),
+                _: 1
+                /* STABLE */
+
+              })])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)];
             }),
             _: 1
             /* STABLE */
 
           }, 8
           /* PROPS */
-          , ["model", "disabled"]), _hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_error_form, {
+          , ["model", "disabled"]), _hoisted_9, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_error_form, {
             errores: $data.errores
           }, null, 8
           /* PROPS */

@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Categorias;
 use App\Models\Kit;
 use App\Models\Movimientos;
+use App\Models\Almacenes;
 use App\Models\Producto;
 use App\Models\Unidades;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class MovimientosController extends Controller
@@ -17,9 +19,10 @@ class MovimientosController extends Controller
         $usuario       = Auth::user();
         $productos     = $this->productosRelacionados();
         $unidades      = Unidades::all();
+        $almacenes      = Almacenes::all();
         //$movimientos   = Movimientos::all();
         $movimientos   = array();
-        return Inertia::render('Movimientos/Index', compact('usuario', 'unidades', 'productos', 'movimientos'));
+        return Inertia::render('Movimientos/Index', compact('usuario', 'unidades', 'productos', 'movimientos','almacenes'));
 //        $categorias = Categorias::all();
 //        $usuario    = Auth::user();
 //        return Inertia::render('/Index', compact('categorias', 'usuario'));
@@ -33,5 +36,23 @@ class MovimientosController extends Controller
             ->join('unidades AS d', 'd.id', '=', 'a.unidad_salida')
             ->join('unidades AS e', 'e.id', '=', 'a.unidad_entrada')
             ->get();
+    }
+
+    public function store(Request $request){
+       try {
+            $productos = $request->productoSeleccion;
+            foreach($productos as $index => $producto){
+                Movimientos::create([
+                    'id_producto' => $producto['id'],
+                    'almacen_entrada' => $request->almacenEntrada,
+                    'almacen_destino' => $request->almacenDestino,
+                    'tipo_movimiento' => $request->tipoMovimiento
+                ]);
+            }
+            return response()->json(array('success' => true, 'info' => Movimientos::all()));
+        }catch (\Exception $ex){
+            DB::rollBack();
+            return response()->json(array('success' => false, 'info' => $ex->getMessage()));
+        }
     }
 }
