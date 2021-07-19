@@ -15,6 +15,7 @@
                               stripe
                               border
                               style="width: 100%"
+                              ref="tablaProductos"
                               @selection-change="handleSelectionChange">
                         <el-table-column
                             type="selection"
@@ -55,18 +56,37 @@
                 </el-card>
             </el-col>
         </el-row>
-        <el-dialog title="Movimientos entre almacenes" v-model="modalForm" width="40%" lock-scroll="false">
+        <el-dialog title="Movimientos entre almacenes" v-model="modalForm" width="50%" lock-scroll="false">
             <el-form ref="form" label-width="150px" :model="model" :disabled="disableForm">
                 <el-form-item label="Tipo de movimiento:"
                               prop="tipoMovimiento"
                               :rules="[{required:true, message:'Seleccione una opcion'}]">
                     <el-radio-group v-model="model.tipoMovimiento">
                         <el-radio label="ENTRE_ALMACENES" border>Movimiento entre almacenes&nbsp;&nbsp;&nbsp;</el-radio>
-                        <br>
                         <el-radio label="REGULAR" border>Movimiento estandar o regular</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <div v-if="model.tipoMovimiento=='ENTRE_ALMACENES'">
+                <el-divider content-position="left">Productos seleccionados para este movimiento</el-divider>
+                <el-space :size="5" spacer="|">
+                    <el-tag v-for="(producto, index) in model.productoSeleccion" :key="index">{{producto.nombre}}</el-tag>
+                </el-space>
+                <br>
+                <br>
+                <el-form-item label="Archivo:">
+                    <el-upload
+                        style="width: 100%;"
+                        class="el-upload-dragger"
+                        action=""
+                        :multiple="true"
+                        :limit="10"
+                        :on-change="upload"
+                        :auto-upload = "false">
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text">Suelta tu archivo aquí o <em>haz clic para cargar</em></div>
+                    </el-upload>
+                </el-form-item>
+                <br>
+                <div v-if="model.tipoMovimiento === 'ENTRE_ALMACENES'">
                     <el-col :span="10">
                         <div style="height: 100px;">
                             <el-steps  direction="vertical">
@@ -76,7 +96,7 @@
                         </div>
                     </el-col>
                     <el-col :span="14">
-                        <el-form-item :rules="[{required:true, message:'Seleccione una opcion',trigger:'change'}]">
+                        <el-form-item prop="almacenEntrada" :rules="[{required:true, message:'Seleccione una opcion'}]">
                             <el-select v-model="model.almacenEntrada" placeholder="Seleccione...">
                                 <el-option
                                     v-for="item in dataAlmacenes"
@@ -86,7 +106,7 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item :rules="[{required:true, message:'Seleccione una opcion',trigger:'change'}]">
+                        <el-form-item prop="almacenDestino" :rules="[{required:true, message:'Seleccione una opcion'}]">
                             <el-select v-model="model.almacenDestino" placeholder="Seleccione...">
                                 <el-option
                                     v-for="item in dataAlmacenes"
@@ -119,7 +139,7 @@
     import axios from "axios";
     export default {
         name: "Index",
-        props:['usuario', 'unidades', 'productos', 'movimientos','almacenes'],
+        props:['usuario', 'unidades', 'productos', 'movimientos','almacenes','multialmacenes'],
         components:{AppMain, ErrorForm, Cargando},
         data(){
             return{
@@ -141,6 +161,7 @@
                 loading: false,
                 dataProductos: this.productos,
                 dataAlmacenes: this.almacenes,
+                listaArchivo:[],
             }
         },
         computed:{
@@ -164,26 +185,40 @@
         },
         methods:{
             guardar(){
-                if(this.model.tipoMovimiento = 'ENTRE_ALMACENES') {
+                console.log(this.model.tipoMovimiento)
+                if(this.model.tipoMovimiento === 'ENTRE_ALMACENES') {
                     this.$refs["form"].validate((valid) => {
                         if (valid) {
-                            axios.post(route('movimientos.store'),this.model)
+                            let form = new FormData();
+                            if (this.listaArchivo.length > 0){
+                                this.listaArchivo.map(file => {
+                                    form.append('archivo[]', file.raw)
+                                })
+                            }
+
+                            this.model.productos = JSON.stringify(this.model.productoSeleccion);
+                            Object.entries(this.model).forEach(([key, value]) => form.append(key, value));
+                            axios.defaults.headers.post['Content-Type'] = 'multipart/form-data;application/json';
+                            axios.post(route('movimientos.store'),form)
                                 .then((res) => {
-                                    this.$notify({
-                                        title: 'Transacción exitosa',
-                                        message: 'Solicitud realizada con éxito',
-                                        type: 'success'
-                                    });
-                                    this.dataCategorias = res.data.info;
-                                    this.errores = null;
-                                    this.modalForm = false;
-                                    this.limpiarModelo();
+                                    if (res.data.success){
+                                        this.$notify({
+                                            title: 'Transacción exitosa',
+                                            message: 'Solicitud realizada con éxito',
+                                            type: 'success'
+                                        });
+                                        this.dataCategorias = res.data.info;
+                                        this.errores = null;
+                                        this.modalForm = false;
+                                        this.limpiarModelo();
+                                    }
                                 })
                                 .catch((error) => {
-                                    let aux = [];
-                                    let info = Object.values(error.response.data.errors);
-                                    info.forEach((item) => aux.push(item[0]));
-                                    this.errores = aux;
+                                    this.$notify({
+                                        title: 'Transacción fallida',
+                                        message: error.response.data.info,
+                                        type: 'warning'
+                                    });
                                 })
                                 .finally(() =>
                                     setTimeout(() => {
@@ -197,7 +232,7 @@
                         }
                     });
                 }
-                if(this.model.tipoMovimiento = 'REGULAR') {
+                if(this.model.tipoMovimiento === 'REGULAR') {
                     this.$refs["form"].validate((valid) => {
                         if (valid) {
                             console.log(this.model.tipoMovimiento)
@@ -214,6 +249,7 @@
             //bloque obligatorio para paginacion de tabla
             limpiarModelo(){
                 this.model = {};
+                this.$refs["tablaProductos"].clearSelection();
             },
             handleSelectionChange(val) {
                 this.model.productoSeleccion = val;
@@ -222,7 +258,11 @@
                 }else if(this.model.productoSeleccion.length==0){
                     this.disableForm = true;
                 }
-            }
+            },
+            upload(imagen, lista){
+                this.listaArchivo = lista;
+                console.log(imagen, lista)
+            },
         }
     }
 </script>

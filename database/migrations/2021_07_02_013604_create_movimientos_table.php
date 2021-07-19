@@ -19,6 +19,7 @@ class CreateMovimientosTable extends Migration
             $table->integer('almacen_entrada')->unsigned();
             $table->integer('almacen_destino')->unsigned();
             $table->enum('tipo_movimiento',['ENTRE_ALMACENES','REGULAR']);
+            $table->string('token')->nullable(false);
             $table->timestamps();
 
             $table->foreign('id_producto')

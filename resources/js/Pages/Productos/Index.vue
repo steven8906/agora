@@ -229,7 +229,10 @@
                     <el-form-item :label="item.almacen + ': '"
                                   prop="almacenes"
                                   v-for="(item, index) in almacenes" :key="index">
-                        <el-switch :modelValue="modelMultialmacen[index].condicion == 1" v-model="modelMultialmacen[index].condicion" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                        <el-switch :modelValue="typeof modelMultialmacen[index] === 'undefined' ? false : modelMultialmacen[index].condicion === 1 "
+                                   v-model="modelMultialmacen[index].condicion"
+                                   active-color="#13ce66"
+                                   inactive-color="#ff4949"></el-switch>
                         <br>
                         <br>
                     </el-form-item>
@@ -303,7 +306,6 @@
                 }
             },
             modelMultialmacen: function (val) {
-                console.log(val)
                 if (Object.keys(val).length === 0) {
                     this.modelMultialmacen.almacenes = [];
                     this.almacenes.map(item => {
