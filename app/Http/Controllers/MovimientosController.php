@@ -9,6 +9,7 @@ use App\Models\Movimientos;
 use App\Models\Almacenes;
 use App\Models\Multialmacen;
 use App\Models\Producto;
+use App\Models\TipoMovimiento;
 use App\Models\Unidades;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -103,6 +104,12 @@ class MovimientosController extends Controller
             DB::rollBack();
             return response()->json(array('success' => true, 'info' => $ex->getMessage()), 400);
         }
+    }
+
+    public function storeTipoMovimiento(Request $request)
+    {
+        TipoMovimiento::create($request->only('descripcion'));
+        return response()->json(['success' => true, 'info' => TipoMovimiento::all()], 200, [], JSON_PRETTY_PRINT);
     }
 
     public function multialmacenesAll(){

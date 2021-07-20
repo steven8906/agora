@@ -3,9 +3,16 @@
 
         <el-button-group>
             <el-button type="primary" icon="el-icon-edit" @click="modalForm = true"></el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="modalFormTipo = true"></el-button>
             <el-button type="primary" icon="el-icon-paperclip"></el-button>
         </el-button-group>
         <br>
+        <br>
+        <h2><b>Listado de tipos de movimientos</b></h2>
+        <el-divider></el-divider>
+        <br>
+        <br>
+        <h2><b>Listado de productos</b></h2>
         <el-divider></el-divider>
         <el-row :gutter="20">
             <el-col :span="24">
@@ -128,6 +135,22 @@
             </template>
             <error-form :errores="errores"></error-form>
         </el-dialog>
+
+        <el-dialog title="Tipo de movimientos" v-model="modalFormTipo" width="50%" lock-scroll="false">
+            <el-form ref="formTipoMovimiento" label-width="150px" :model="modelTipo">
+                <el-form-item label="Tipo de movimiento:"
+                              prop="descripcion"
+                              :rules="[{required:true, message:'Debe insertar tipo de movimiento'}]">
+                    <el-input placeholder="Tipo de movimiento" v-model="modelTipo.descripcion"></el-input>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="modalFormTipo = false">Cancelar</el-button>
+                  <el-button type="primary" @click="guardarTipo">Aceptar</el-button>
+                </span>
+            </template>
+        </el-dialog>
         <cargando :mostrarCargando="loading"></cargando>
     </app-main>
 </template>
@@ -139,7 +162,7 @@
     import axios from "axios";
     export default {
         name: "Index",
-        props:['usuario', 'unidades', 'productos', 'movimientos','almacenes','multialmacenes'],
+        props:['usuario', 'unidades', 'productos', 'movimientos','almacenes','multialmacenes', 'tipoMovimientos'],
         components:{AppMain, ErrorForm, Cargando},
         data(){
             return{
@@ -149,6 +172,7 @@
                     almacenDestino:"",
                     productoSeleccion: [],
                 },
+                modelTipo:{},
                 //bloque obligatorio para paginacion de tabla
                 page: 1,
                 pageSize: 10,
@@ -161,7 +185,9 @@
                 loading: false,
                 dataProductos: this.productos,
                 dataAlmacenes: this.almacenes,
+                dataTipoMovimientos:this.tipoMovimiento,
                 listaArchivo:[],
+                modalFormTipo:false
             }
         },
         computed:{
@@ -241,6 +267,41 @@
                         }
                     });
                 }
+            },
+            guardarTipo(){
+                this.$refs["formTipoMovimiento"].validate((valid) => {
+                    if (valid) {
+                        axios.post(route('movimientos.storeTipoMovimiento'),this.modelTipo)
+                            .then((res) => {
+                                if (res.data.success){
+                                    this.$notify({
+                                        title: 'Transacción exitosa',
+                                        message: 'Solicitud realizada con éxito',
+                                        type: 'success'
+                                    });
+                                    this.dataTipoMovimientos = res.data.info;
+                                    this.modalFormTipo = false;
+                                    this.modelTipo = {};
+                                }
+                            })
+                            .catch((error) => {
+                                this.$notify({
+                                    title: 'Transacción fallida',
+                                    message: error.response.data.info,
+                                    type: 'warning'
+                                });
+                            })
+                            .finally(() =>
+                                setTimeout(() => {
+                                    this.loading = false
+                                }, 1000))
+                    } else {
+                        console.log('error submit!!');
+                        setTimeout(() => {
+                            this.loading = false
+                        }, 1000)
+                    }
+                });
             },
             //bloque obligatorio para paginacion de tabla
             handleCurrentChange(val) {

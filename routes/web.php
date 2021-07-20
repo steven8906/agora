@@ -87,6 +87,7 @@ Route::group(['prefix' => 'kits'] , function (){
 Route::group(['prefix' => 'movimientos'] , function (){
     Route::get('/', [MovimientosController::class, 'index'])->name('movimientos.index');
     Route::post('/guardar', [MovimientosController::class, 'store'])->name('movimientos.store');
+    Route::post('/guardartipomovimiento', [MovimientosController::class, 'storeTipoMovimiento'])->name('movimientos.storeTipoMovimiento');
     Route::post('/actualizar', [MovimientosController::class, 'update'])->name('movimientos.update');
 });
 

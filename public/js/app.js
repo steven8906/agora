@@ -23717,7 +23717,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Index",
-  props: ['usuario', 'unidades', 'productos', 'movimientos', 'almacenes', 'multialmacenes'],
+  props: ['usuario', 'unidades', 'productos', 'movimientos', 'almacenes', 'multialmacenes', 'tipoMovimientos'],
   components: {
     AppMain: _Layouts_AppMain__WEBPACK_IMPORTED_MODULE_0__.default,
     ErrorForm: _Pages_Componentes_ErrorForm__WEBPACK_IMPORTED_MODULE_1__.default,
@@ -23731,6 +23731,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         almacenDestino: "",
         productoSeleccion: []
       },
+      modelTipo: {},
       //bloque obligatorio para paginacion de tabla
       page: 1,
       pageSize: 10,
@@ -23743,7 +23744,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       loading: false,
       dataProductos: this.productos,
       dataAlmacenes: this.almacenes,
-      listaArchivo: []
+      dataTipoMovimientos: this.tipoMovimiento,
+      listaArchivo: [],
+      modalFormTipo: false
     };
   },
   computed: {
@@ -23836,6 +23839,42 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           }
         });
       }
+    },
+    guardarTipo: function guardarTipo() {
+      var _this2 = this;
+
+      this.$refs["formTipoMovimiento"].validate(function (valid) {
+        if (valid) {
+          axios__WEBPACK_IMPORTED_MODULE_3___default().post(route('movimientos.storeTipoMovimiento'), _this2.modelTipo).then(function (res) {
+            if (res.data.success) {
+              _this2.$notify({
+                title: 'Transacción exitosa',
+                message: 'Solicitud realizada con éxito',
+                type: 'success'
+              });
+
+              _this2.dataTipoMovimientos = res.data.info;
+              _this2.modalFormTipo = false;
+              _this2.modelTipo = {};
+            }
+          })["catch"](function (error) {
+            _this2.$notify({
+              title: 'Transacción fallida',
+              message: error.response.data.info,
+              type: 'warning'
+            });
+          })["finally"](function () {
+            return setTimeout(function () {
+              _this2.loading = false;
+            }, 1000);
+          });
+        } else {
+          console.log('error submit!!');
+          setTimeout(function () {
+            _this2.loading = false;
+          }, 1000);
+        }
+      });
     },
     //bloque obligatorio para paginacion de tabla
     handleCurrentChange: function handleCurrentChange(val) {
@@ -33212,65 +33251,93 @@ var _hoisted_1 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("
 /* HOISTED */
 );
 
-var _hoisted_2 = {
+var _hoisted_2 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+/* HOISTED */
+);
+
+var _hoisted_3 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("h2", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, "Listado de tipos de movimientos")], -1
+/* HOISTED */
+);
+
+var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+/* HOISTED */
+);
+
+var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+/* HOISTED */
+);
+
+var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("h2", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, "Listado de productos")], -1
+/* HOISTED */
+);
+
+var _hoisted_7 = {
   "class": "demo-image__preview"
 };
-var _hoisted_3 = {
+var _hoisted_8 = {
   style: {
     "text-align": "center"
   }
 };
 
-var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Movimiento entre almacenes   ");
+var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Movimiento entre almacenes   ");
 
-var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Movimiento estandar o regular");
+var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Movimiento estandar o regular");
 
-var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Productos seleccionados para este movimiento");
+var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Productos seleccionados para este movimiento");
 
-var _hoisted_7 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
 /* HOISTED */
 );
 
-var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+var _hoisted_13 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
 /* HOISTED */
 );
 
-var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
+var _hoisted_14 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
   "class": "el-icon-upload"
 }, null, -1
 /* HOISTED */
 );
 
-var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", {
+var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", {
   "class": "el-upload__text"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Suelta tu archivo aquí o "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("em", null, "haz clic para cargar")], -1
 /* HOISTED */
 );
 
-var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
 /* HOISTED */
 );
 
-var _hoisted_12 = {
+var _hoisted_17 = {
   key: 0
 };
-var _hoisted_13 = {
+var _hoisted_18 = {
   style: {
     "height": "100px"
   }
 };
 
-var _hoisted_14 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
+var _hoisted_19 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("br", null, null, -1
 /* HOISTED */
 );
 
-var _hoisted_15 = {
+var _hoisted_20 = {
   "class": "dialog-footer"
 };
 
-var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Cancelar");
+var _hoisted_21 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Cancelar");
 
-var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
+var _hoisted_22 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
+
+var _hoisted_23 = {
+  "class": "dialog-footer"
+};
+
+var _hoisted_24 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Cancelar");
+
+var _hoisted_25 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
 
 (0,vue__WEBPACK_IMPORTED_MODULE_0__.popScopeId)();
 
@@ -33323,6 +33390,8 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
 
   var _component_el_dialog = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-dialog");
 
+  var _component_el_input = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-input");
+
   var _component_cargando = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("cargando");
 
   var _component_app_main = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("app-main");
@@ -33343,13 +33412,19 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
             })
           }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
             type: "primary",
+            icon: "el-icon-plus",
+            onClick: _cache[2] || (_cache[2] = function ($event) {
+              return $data.modalFormTipo = true;
+            })
+          }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+            type: "primary",
             icon: "el-icon-paperclip"
           })];
         }),
         _: 1
         /* STABLE */
 
-      }), _hoisted_1, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_row, {
+      }), _hoisted_1, _hoisted_2, _hoisted_3, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), _hoisted_4, _hoisted_5, _hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_row, {
         gutter: 20
       }, {
         "default": _withId(function () {
@@ -33386,7 +33461,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                         label: "Imagén"
                       }, {
                         "default": _withId(function (scope) {
-                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_image, {
+                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_image, {
                             style: {
                               "width": "100px"
                             },
@@ -33413,7 +33488,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                     type: "warning",
                     description: "No existen datos para mostrar",
                     "show-icon": ""
-                  })), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_pagination, {
+                  })), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_pagination, {
                     background: "",
                     layout: "prev, pager, next",
                     onCurrentChange: $options.handleCurrentChange,
@@ -33439,20 +33514,20 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_dialog, {
         title: "Movimientos entre almacenes",
         modelValue: $data.modalForm,
-        "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+        "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
           return $data.modalForm = $event;
         }),
         width: "50%",
         "lock-scroll": "false"
       }, {
         footer: _withId(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
-            onClick: _cache[5] || (_cache[5] = function ($event) {
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+            onClick: _cache[6] || (_cache[6] = function ($event) {
               return $data.modalForm = false;
             })
           }, {
             "default": _withId(function () {
-              return [_hoisted_16];
+              return [_hoisted_21];
             }),
             _: 1
             /* STABLE */
@@ -33462,7 +33537,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
             onClick: $options.guardar
           }, {
             "default": _withId(function () {
-              return [_hoisted_17];
+              return [_hoisted_22];
             }),
             _: 1
             /* STABLE */
@@ -33490,7 +33565,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                 "default": _withId(function () {
                   return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_radio_group, {
                     modelValue: $data.model.tipoMovimiento,
-                    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+                    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
                       return $data.model.tipoMovimiento = $event;
                     })
                   }, {
@@ -33500,7 +33575,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                         border: ""
                       }, {
                         "default": _withId(function () {
-                          return [_hoisted_4];
+                          return [_hoisted_9];
                         }),
                         _: 1
                         /* STABLE */
@@ -33510,7 +33585,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                         border: ""
                       }, {
                         "default": _withId(function () {
-                          return [_hoisted_5];
+                          return [_hoisted_10];
                         }),
                         _: 1
                         /* STABLE */
@@ -33531,7 +33606,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                 "content-position": "left"
               }, {
                 "default": _withId(function () {
-                  return [_hoisted_6];
+                  return [_hoisted_11];
                 }),
                 _: 1
                 /* STABLE */
@@ -33563,7 +33638,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                 _: 1
                 /* STABLE */
 
-              }), _hoisted_7, _hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+              }), _hoisted_12, _hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
                 label: "Archivo:"
               }, {
                 "default": _withId(function () {
@@ -33579,7 +33654,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                     "auto-upload": false
                   }, {
                     "default": _withId(function () {
-                      return [_hoisted_9, _hoisted_10];
+                      return [_hoisted_14, _hoisted_15];
                     }),
                     _: 1
                     /* STABLE */
@@ -33591,11 +33666,11 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                 _: 1
                 /* STABLE */
 
-              }), _hoisted_11, $data.model.tipoMovimiento === 'ENTRE_ALMACENES' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_col, {
+              }), _hoisted_16, $data.model.tipoMovimiento === 'ENTRE_ALMACENES' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_col, {
                 span: 10
               }, {
                 "default": _withId(function () {
-                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_steps, {
+                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_steps, {
                     direction: "vertical"
                   }, {
                     "default": _withId(function () {
@@ -33627,7 +33702,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                     "default": _withId(function () {
                       return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_select, {
                         modelValue: $data.model.almacenEntrada,
-                        "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+                        "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
                           return $data.model.almacenEntrada = $event;
                         }),
                         placeholder: "Seleccione..."
@@ -33665,7 +33740,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                     "default": _withId(function () {
                       return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_select, {
                         modelValue: $data.model.almacenDestino,
-                        "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+                        "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
                           return $data.model.almacenDestino = $event;
                         }),
                         placeholder: "Seleccione..."
@@ -33705,11 +33780,89 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
 
           }, 8
           /* PROPS */
-          , ["model", "disabled"]), _hoisted_14, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_error_form, {
+          , ["model", "disabled"]), _hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_error_form, {
             errores: $data.errores
           }, null, 8
           /* PROPS */
           , ["errores"])];
+        }),
+        _: 1
+        /* STABLE */
+
+      }, 8
+      /* PROPS */
+      , ["modelValue"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_dialog, {
+        title: "Tipo de movimientos",
+        modelValue: $data.modalFormTipo,
+        "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
+          return $data.modalFormTipo = $event;
+        }),
+        width: "50%",
+        "lock-scroll": "false"
+      }, {
+        footer: _withId(function () {
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+            onClick: _cache[9] || (_cache[9] = function ($event) {
+              return $data.modalFormTipo = false;
+            })
+          }, {
+            "default": _withId(function () {
+              return [_hoisted_24];
+            }),
+            _: 1
+            /* STABLE */
+
+          }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+            type: "primary",
+            onClick: $options.guardarTipo
+          }, {
+            "default": _withId(function () {
+              return [_hoisted_25];
+            }),
+            _: 1
+            /* STABLE */
+
+          }, 8
+          /* PROPS */
+          , ["onClick"])])];
+        }),
+        "default": _withId(function () {
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form, {
+            ref: "formTipoMovimiento",
+            "label-width": "150px",
+            model: $data.modelTipo
+          }, {
+            "default": _withId(function () {
+              return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+                label: "Tipo de movimiento:",
+                prop: "descripcion",
+                rules: [{
+                  required: true,
+                  message: 'Debe insertar tipo de movimiento'
+                }]
+              }, {
+                "default": _withId(function () {
+                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
+                    placeholder: "Tipo de movimiento",
+                    modelValue: $data.modelTipo.descripcion,
+                    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
+                      return $data.modelTipo.descripcion = $event;
+                    })
+                  }, null, 8
+                  /* PROPS */
+                  , ["modelValue"])];
+                }),
+                _: 1
+                /* STABLE */
+
+              })];
+            }),
+            _: 1
+            /* STABLE */
+
+          }, 8
+          /* PROPS */
+          , ["model"])];
         }),
         _: 1
         /* STABLE */
