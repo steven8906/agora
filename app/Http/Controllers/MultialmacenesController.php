@@ -43,11 +43,16 @@ class MultialmacenesController extends Controller
 
     private function productosMultialmacen(){
         return Multialmacen::from('multialmacen AS a')
-                ->selectRaw('a.id_producto, ANY_VALUE(b.nombre) AS producto, ANY_VALUE(b.condicion) AS condicion,
-                            GROUP_CONCAT(c.almacen SEPARATOR "-") AS almacenes, ANY_VALUE(b.codigo) AS codigo,
-                            ANY_VALUE(b.codigo_alterno) AS codigo_alterno, ANY_VALUE(b.path_imagen) AS path_imagen,
-                            LPAD(ANY_VALUE(a.stock),6,0) AS stock, LPAD(ANY_VALUE(a.stock_minimo),6,0) AS stock_minimo,
-                            LPAD(ANY_VALUE(a.stock_maximo),6,0) AS stock_maximo')
+                ->selectRaw('a.id_producto
+                           ,ANY_VALUE(b.nombre)                   AS producto
+                           ,ANY_VALUE(b.condicion)                AS condicion
+                           ,GROUP_CONCAT(c.almacen SEPARATOR "-") AS almacenes
+                           ,ANY_VALUE(b.codigo)                   AS codigo
+                           ,ANY_VALUE(b.codigo_alterno)           AS codigo_alterno
+                           ,ANY_VALUE(b.path_imagen)              AS path_imagen
+                           ,( SELECT  SUM(summul.stock) FROM multialmacen AS summul WHERE summul.id_producto = b.id) AS stock
+                           ,ANY_VALUE(a.stock_minimo) AS stock_minimo
+                           ,ANY_VALUE(a.stock_maximo) AS stock_maximo')
                 ->join('productos AS b', 'b.id', '=', 'a.id_producto')
                 ->join('almacenes AS c', 'c.id', '=', 'a.id_almacen')
                 ->groupBy('a.id_producto')->get();

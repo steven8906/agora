@@ -15,18 +15,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use function GuzzleHttp\Promise\all;
 
 class MovimientosController extends Controller
 {
     public function index(){
-        $usuario         = Auth::user();
-        $productos       = $this->productosRelacionados();
-        $unidades        = Unidades::all();
-        $almacenes       = Almacenes::all();
-        $multialmacenes  = $this->multialmacenesAll();
-        //$movimientos   = Movimientos ::all();
-        $movimientos     = array();
-        return Inertia::render('Movimientos/Index', compact('usuario', 'unidades', 'productos', 'movimientos','almacenes', 'multialmacenes'));
+        $usuario          = Auth::user();
+        $productos        = $this->productosRelacionados();
+        $unidades         = Unidades::all();
+        $almacenes        = Almacenes::all();
+        $multialmacenes   = $this->multialmacenesAll();
+        //$movimientos    = Movimientos ::all();
+        $movimientos      = array();
+        $tipoMovimientos  = TipoMovimiento::all();
+        $all_movimientos  = $this->getMovimientos();
+        return Inertia::render('Movimientos/Index', compact('usuario', 'unidades',
+                                        'productos', 'movimientos','almacenes', 'multialmacenes', 'tipoMovimientos',
+                                        'all_movimientos'));
     }
 
     private function productosRelacionados(){
@@ -65,44 +70,59 @@ class MovimientosController extends Controller
                 }
             }
 
-            $col_movimientos = [];
-            foreach ($productos as $producto) {
-                array_push($col_movimientos, [
-                    'id_producto'        => $producto->id,
-                    'id_almacen_origen'  => $request ->almacenEntrada,
-                    'id_almacen_destino' => $request ->almacenDestino
-                ]);
-                Movimientos::create([
-                    'id_producto'     => $producto->id,
-                    'almacen_entrada' => $request->almacenEntrada,
-                    'almacen_destino' => $request->almacenDestino,
-                    'tipo_movimiento' => $request->tipoMovimiento,
-                    'token'           => $token,
-                ]);
-            }
-            //recorrer lmultialmacenes que conicidan con el almacen de salida y trasladarlos al de destino
-            foreach ($col_movimientos as $movimiento){
-                $multialmacenes = Multialmacen::all();
-                Multialmacen::where('id_producto', $movimiento['id_producto'])->where('id_almacen',
-                    $movimiento['id_almacen_origen'])->delete();
-                foreach ($multialmacenes as $multialmacen){
-                    if($multialmacen->id_producto == $movimiento['id_producto'] && $multialmacen->id_almacen == $request->almacenEntrada){
-                        $model = [
-                            'id_almacen'   => (int) $movimiento['id_almacen_destino'],
-                            'id_producto'  => $movimiento['id_producto'],
-                            'stock'        => $multialmacen->stock,
-                            'stock_minimo' => $multialmacen->stock_minimo,
-                            'stock_maximo' => $multialmacen->stock_maximo,
-                        ];
-                        Multialmacen::create($model);
+            if ($request->get('tipoMovimiento') === 'ENTRE_ALMACENES')
+            {
+                $col_movimientos = [];
+                foreach ($productos as $producto) {
+                    array_push($col_movimientos, [
+                        'id_producto'        => $producto->id,
+                        'id_almacen_origen'  => $request ->almacenEntrada,
+                        'id_almacen_destino' => $request ->almacenDestino
+                    ]);
+                    Movimientos::create([
+                        'id_producto'     => $producto->id,
+                        'almacen_entrada' => $request->almacenEntrada,
+                        'almacen_destino' => $request->almacenDestino,
+                        'tipo_movimiento' => $request->tipoMovimiento,
+                        'token'           => $token,
+                    ]);
+                }
+                //recorrer lmultialmacenes que conicidan con el almacen de salida y trasladarlos al de destino
+                foreach ($col_movimientos as $movimiento){
+                    $multialmacenes = Multialmacen::all();
+                    //captura almacen de origen
+                    $origen  = $multialmacenes->filter(function($item) use ($movimiento){
+                        return $item->id_producto == $movimiento['id_producto'] &&
+                            $item->id_almacen == $movimiento['id_almacen_origen'];
+                    })->first();
+                    //captura almacen de destino
+                    $destino = $multialmacenes->filter(function($item) use ($movimiento){
+                        return $item->id_producto == $movimiento['id_producto'] &&
+                            $item->id_almacen == $movimiento['id_almacen_destino'];
+                    })->first();
+                    if ($origen != $destino){
+                        //comprueba si los almacenes para el movimientos son diferentes y hace el update
+                        Multialmacen::where(['id' => $origen->id])->update(['stock' => 0]);
+                        Multialmacen::where(['id' => $destino->id])->update(['stock' => (double) ($destino->stock + $origen->stock)]);
                     }
                 }
             }
+            else{
+                foreach ($productos as $producto)
+                {
+                    Movimientos::create([
+                        'id_producto'     => $producto->id,
+                        'tipo_movimiento' => $request->get('tipoMovimiento'),
+                        'ubicacion'       => $request->get('ubicacion'),
+                        'token'           => $token,
+                    ]);
+                }
+            }
             DB::commit();
-            return response()->json(array('success' => true, 'info' => 'Solicitud exitosa'));
+            return response()->json(array('success' => true, 'info' => 'Solicitud exitosa', 'all_movimientos' => $this->getMovimientos()));
         }catch (\Exception $ex){
             DB::rollBack();
-            return response()->json(array('success' => true, 'info' => $ex->getMessage()), 400);
+            return response()->json(array('success' => true, 'info' => $ex->getLine()), 400);
         }
     }
 
@@ -118,6 +138,16 @@ class MovimientosController extends Controller
                                         'a.stock_minimo', 'a.stock_maximo', 'a.condicion')
                             ->join('almacenes AS b', 'b.id', '=', 'a.id_almacen')
                             ->join('productos AS c', 'c.id', '=', 'a.id_producto')
+                            ->get();
+    }
+
+    public function getMovimientos()
+    {
+        return Movimientos::from('movimientos AS a')->select('a.id' ,'b.nombre AS producto', 'c.almacen AS almacen_entrada',
+                                'd.almacen AS almacen_destino', 'a.tipo_movimiento', 'a.token', 'a.ubicacion', 'a.created_at')
+                            ->join('productos AS b', 'b.id' ,'=', 'a.id_producto')
+                            ->join('almacenes AS c', 'c.id', '=', 'a.almacen_entrada')
+                            ->join('almacenes AS d', 'd.id', '=', 'a.almacen_destino')
                             ->get();
     }
 }

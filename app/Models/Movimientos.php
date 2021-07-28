@@ -14,5 +14,6 @@ class Movimientos extends Model
         'almacen_destino',
         'tipo_movimiento',
         'token',
+        'ubicacion',
     );
 }

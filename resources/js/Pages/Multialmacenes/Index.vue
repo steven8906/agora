@@ -23,9 +23,7 @@
 <!--                        </el-table-column>-->
                         <el-table-column label="Producto" prop="producto"></el-table-column>
                         <el-table-column label="Código" prop="codigo"></el-table-column>
-                        <el-table-column label="Stock actual" prop="stock"></el-table-column>
-                        <el-table-column label="Stock mínimo" prop="stock_minimo"></el-table-column>
-                        <el-table-column label="Stock máximo" prop="stock_maximo"></el-table-column>
+                        <el-table-column label="Stock total actual" prop="stock"></el-table-column>
                         <el-table-column
                             label="Imagén"
                             width="120">

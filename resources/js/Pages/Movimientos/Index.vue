@@ -1,6 +1,5 @@
 <template>
     <app-main selected="6" titulo="Movimientos" :usuario="usuario">
-
         <el-button-group>
             <el-button type="primary" icon="el-icon-edit" @click="modalForm = true"></el-button>
             <el-button type="primary" icon="el-icon-plus" @click="modalFormTipo = true"></el-button>
@@ -125,6 +124,18 @@
                         </el-form-item>
                     </el-col>
                 </div>
+                <div v-else-if="model.tipoMovimiento === 'REGULAR'">
+                    <el-form-item label="Tipo de movimiento: ">
+                        <el-select v-model="model.ubicacion" placeholder="Tipo de movimiento">
+                            <el-option
+                                v-for="item in dataTipoMovimientos"
+                                :key="item.id"
+                                :label="item.descripcion"
+                                :value="item.descripcion">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                </div>
             </el-form>
             <br>
             <template #footer>
@@ -133,7 +144,7 @@
                   <el-button type="primary" @click="guardar">Aceptar</el-button>
                 </span>
             </template>
-            <error-form :errores="errores"></error-form>
+            <error-form :errores="errores" v-if="errores !== null"></error-form>
         </el-dialog>
 
         <el-dialog title="Tipo de movimientos" v-model="modalFormTipo" width="50%" lock-scroll="false">
@@ -152,6 +163,7 @@
             </template>
         </el-dialog>
         <cargando :mostrarCargando="loading"></cargando>
+        <pre>{{dataAllMovimientos}}</pre>
     </app-main>
 </template>
 
@@ -162,7 +174,7 @@
     import axios from "axios";
     export default {
         name: "Index",
-        props:['usuario', 'unidades', 'productos', 'movimientos','almacenes','multialmacenes', 'tipoMovimientos'],
+        props:['usuario', 'unidades', 'productos', 'movimientos','almacenes','multialmacenes', 'tipoMovimientos', 'all_movimientos'],
         components:{AppMain, ErrorForm, Cargando},
         data(){
             return{
@@ -185,10 +197,14 @@
                 loading: false,
                 dataProductos: this.productos,
                 dataAlmacenes: this.almacenes,
-                dataTipoMovimientos:this.tipoMovimiento,
+                dataTipoMovimientos:this.tipoMovimientos,
+                dataAllMovimientos:this.all_movimientos,
                 listaArchivo:[],
                 modalFormTipo:false
             }
+        },
+        mounted() {
+            console.log(this.dataTipoMovimientos)
         },
         computed:{
             displayData() {
@@ -212,7 +228,7 @@
         methods:{
             guardar(){
                 console.log(this.model.tipoMovimiento)
-                if(this.model.tipoMovimiento === 'ENTRE_ALMACENES') {
+                if(true) {
                     this.$refs["form"].validate((valid) => {
                         if (valid) {
                             let form = new FormData();
@@ -237,6 +253,7 @@
                                         this.errores = null;
                                         this.modalForm = false;
                                         this.limpiarModelo();
+                                        this.dataAllMovimientos = res.data.all_movimientos
                                     }
                                 })
                                 .catch((error) => {
@@ -313,6 +330,7 @@
                 this.$refs["tablaProductos"].clearSelection();
             },
             handleSelectionChange(val) {
+                console.log(val)
                 this.model.productoSeleccion = val;
                 if(this.model.productoSeleccion.length>0){
                     this.disableForm = false;
