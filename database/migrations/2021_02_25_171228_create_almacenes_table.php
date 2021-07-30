@@ -14,7 +14,7 @@ class CreateAlmacenesTable extends Migration
     public function up()
     {
         Schema::create('almacenes', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->string('almacen');
             $table->string('descripcion')->nullable();
             $table->boolean('condicion')->default(1);

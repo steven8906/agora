@@ -120,7 +120,7 @@
                 </el-form-item>
                 <el-form-item label="Código alterno:"
                               prop="codigo_alterno">
-                    <el-input placeholder="Código alterno" v-model="model.codigo_alterno" :value="0" clearable></el-input>
+                    <el-input placeholder="Código alterno" v-model="model.codigo_alterno" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="Tipo:"
                               :rules="[{required:true, message:'Campo obligatorio'}]">
@@ -144,7 +144,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="Precio compra:"
-                              prop="precio_compra"
+                              :prop="precio_compra"
                               :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message: 'Ingrese un precio válido'}]">
                     <el-input placeholder="Precio compra" v-model.number="model.precio_compra" clearable></el-input>
                 </el-form-item>
@@ -158,21 +158,21 @@
                         <el-form-item label="Precio minímo:"
                                       :prop="precio_minimo"
                                       :rules="[{type:'number', message: 'Ingrese un precio válido'}]">
-                            <el-input placeholder="Precio minímo" v-model.number="model.precio_minimo" model-value="0" clearable></el-input>
+                            <el-input placeholder="Precio minímo" v-model.number="model.precio_minimo" clearable></el-input>
                         </el-form-item>
                     </el-collapse-item>
                     <el-collapse-item title="Precio liquidación" name="3">
                         <el-form-item label="Precio liquidación:"
                                       :prop="precio_liquidacion"
                                       :rules="[{type:'number', message: 'Ingrese un precio válido'}]">
-                            <el-input placeholder="Precio liquidación" v-model.number="model.precio_liquidacion" model-value="0" clearable></el-input>
+                            <el-input placeholder="Precio liquidación" v-model.number="model.precio_liquidacion" clearable></el-input>
                         </el-form-item>
                     </el-collapse-item>
                     <el-collapse-item title="Precio mayorista" name="4">
                         <el-form-item label="Precio mayorista:"
                                       :prop="precio_mayorista"
                                       :rules="[{type:'number', message: 'Ingrese un precio válido'}]">
-                            <el-input placeholder="Precio mayorista" v-model.number="model.precio_mayorista" model-value="0" clearable></el-input>
+                            <el-input placeholder="Precio mayorista" v-model.number="model.precio_mayorista" clearable></el-input>
                         </el-form-item>
                     </el-collapse-item>
                 </el-collapse>

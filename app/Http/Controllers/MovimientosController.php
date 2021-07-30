@@ -47,8 +47,11 @@ class MovimientosController extends Controller
     public function store(Request $request){
         DB::beginTransaction();
         try {
-            $token     = uniqid('MOV_');
-            $productos = json_decode($request->get('productos'));
+            $token              = uniqid('MOV_');
+            $productos          = json_decode($request->get('productos'));
+            $cantidad_productos = json_decode($request->get('cantidadProductos'));
+            //TODO: Completar el movimiento con las cantidades
+            dd($cantidad_productos);
             //se cargan los archivos y se hace registro en dd antes de hacer el movimiento
             if ($request->hasFile('archivo')) {
                 $col_archivos = $request->file('archivo');
@@ -108,12 +111,14 @@ class MovimientosController extends Controller
                 }
             }
             else{
+                dd($request->all());
                 foreach ($productos as $producto)
                 {
                     Movimientos::create([
                         'id_producto'     => $producto->id,
                         'tipo_movimiento' => $request->get('tipoMovimiento'),
                         'ubicacion'       => $request->get('ubicacion'),
+                        'almacen_destino' => $request->almacenDestino,
                         'token'           => $token,
                     ]);
                 }

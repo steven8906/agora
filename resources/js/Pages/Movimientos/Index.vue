@@ -73,69 +73,104 @@
                     </el-radio-group>
                 </el-form-item>
                 <el-divider content-position="left">Productos seleccionados para este movimiento</el-divider>
-                <el-space :size="5" spacer="|">
-                    <el-tag v-for="(producto, index) in model.productoSeleccion" :key="index">{{producto.nombre}}</el-tag>
-                </el-space>
                 <br>
-                <br>
-                <el-form-item label="Archivo:">
-                    <el-upload
-                        style="width: 100%;"
-                        class="el-upload-dragger"
-                        action=""
-                        :multiple="true"
-                        :limit="10"
-                        :on-change="upload"
-                        :auto-upload = "false">
-                        <i class="el-icon-upload"></i>
-                        <div class="el-upload__text">Suelta tu archivo aquí o <em>haz clic para cargar</em></div>
-                    </el-upload>
-                </el-form-item>
-                <br>
-                <div v-if="model.tipoMovimiento === 'ENTRE_ALMACENES'">
-                    <el-col :span="10">
-                        <div style="height: 100px;">
-                            <el-steps  direction="vertical">
-                                <el-step title="Almacén de salida"></el-step>
-                                <el-step title="Almacén de destino"></el-step>
-                            </el-steps>
+                <el-row class="row-bg" justify="center">
+                    <el-col>
+                        <div v-if="model.tipoMovimiento === 'ENTRE_ALMACENES'">
+                            <el-col :span="10">
+                                <div style="height: 100px;">
+                                    <el-steps  direction="vertical">
+                                        <el-step title="Almacén de salida"></el-step>
+                                        <el-step title="Almacén de destino"></el-step>
+                                    </el-steps>
+                                </div>
+                            </el-col>
+                            <el-col :span="14">
+                                <el-form-item prop="almacenEntrada" :rules="[{required:true, message:'Seleccione una opcion'}]">
+                                    <el-select v-model="model.almacenEntrada" placeholder="Seleccione...">
+                                        <el-option
+                                            v-for="item in dataAlmacenes"
+                                            :key="item.id"
+                                            :label="item.almacen"
+                                            :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item prop="almacenDestino" :rules="[{required:true, message:'Seleccione una opcion'}]">
+                                    <el-select v-model="model.almacenDestino" placeholder="Seleccione...">
+                                        <el-option
+                                            v-for="item in dataAlmacenes"
+                                            :key="item.id"
+                                            :label="item.almacen"
+                                            :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </div>
+                        <div v-else-if="model.tipoMovimiento === 'REGULAR'">
+                            <el-form-item>
+                                <el-date-picker
+                                    v-model="model.fecha"
+                                    type="date"
+                                    placeholder="Seleccione una fecha">
+                                </el-date-picker>
+                            </el-form-item>
+                            <el-form-item style="width: 50%">
+                                <el-input placeholder="Inserte folio documento" v-model="model.folio_documento"></el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-select v-model="model.ubicacion" placeholder="Tipo de movimiento">
+                                    <el-option
+                                        v-for="item in dataTipoMovimientos"
+                                        :key="item.id"
+                                        :label="item.descripcion"
+                                        :value="item.descripcion">
+                                    </el-option>
+                                </el-select>
+                                &nbsp;
+                                &nbsp;
+                                &nbsp;
+                                <el-select v-model="model.almacenEntrada" placeholder="Seleccione almacén...">
+                                    <el-option
+                                        v-for="item in dataAlmacenes"
+                                        :key="item.id"
+                                        :label="item.almacen"
+                                        :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
                         </div>
                     </el-col>
-                    <el-col :span="14">
-                        <el-form-item prop="almacenEntrada" :rules="[{required:true, message:'Seleccione una opcion'}]">
-                            <el-select v-model="model.almacenEntrada" placeholder="Seleccione...">
-                                <el-option
-                                    v-for="item in dataAlmacenes"
-                                    :key="item.id"
-                                    :label="item.almacen"
-                                    :value="item.id">
-                                </el-option>
-                            </el-select>
+                    <br>
+                    <el-col>
+                        <el-form-item>
+                            <el-upload
+                                style="width: 100%;"
+                                class="el-upload-dragger"
+                                action=""
+                                :multiple="true"
+                                :limit="10"
+                                :on-change="upload"
+                                :auto-upload = "false">
+                                <i class="el-icon-upload"></i>
+                                <div class="el-upload__text">Suelta tu archivo aquí o <em>haz clic para cargar</em></div>
+                            </el-upload>
                         </el-form-item>
-                        <el-form-item prop="almacenDestino" :rules="[{required:true, message:'Seleccione una opcion'}]">
-                            <el-select v-model="model.almacenDestino" placeholder="Seleccione...">
-                                <el-option
-                                    v-for="item in dataAlmacenes"
-                                    :key="item.id"
-                                    :label="item.almacen"
-                                    :value="item.id">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
+                        <br>
                     </el-col>
-                </div>
-                <div v-else-if="model.tipoMovimiento === 'REGULAR'">
-                    <el-form-item label="Tipo de movimiento: ">
-                        <el-select v-model="model.ubicacion" placeholder="Tipo de movimiento">
-                            <el-option
-                                v-for="item in dataTipoMovimientos"
-                                :key="item.id"
-                                :label="item.descripcion"
-                                :value="item.descripcion">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                </div>
+                    <el-col>
+                        <el-card class="box-card" style="width: 30%;">
+                            <template #header>
+                                <div class="card-header">
+                                    <span>Productos</span>
+                                </div>
+                            </template>
+                            <p v-for="(producto, index) in model.productoSeleccion" :key="index"><b>{{producto.nombre}}</b>
+                                <el-input placeholder="Cantidad" v-model="cantidades[index].cantidad"> </el-input></p>
+                        </el-card>
+                    </el-col>
+                </el-row>
             </el-form>
             <br>
             <template #footer>
@@ -163,7 +198,7 @@
             </template>
         </el-dialog>
         <cargando :mostrarCargando="loading"></cargando>
-        <pre>{{dataAllMovimientos}}</pre>
+        <pre>{{cantidades}}</pre>
     </app-main>
 </template>
 
@@ -184,6 +219,7 @@
                     almacenDestino:"",
                     productoSeleccion: [],
                 },
+                cantidades:[],
                 modelTipo:{},
                 //bloque obligatorio para paginacion de tabla
                 page: 1,
@@ -204,7 +240,6 @@
             }
         },
         mounted() {
-            console.log(this.dataTipoMovimientos)
         },
         computed:{
             displayData() {
@@ -240,6 +275,7 @@
 
                             this.model.productos = JSON.stringify(this.model.productoSeleccion);
                             Object.entries(this.model).forEach(([key, value]) => form.append(key, value));
+                            form.append('cantidadProductos', JSON.stringify(this.cantidades));
                             axios.defaults.headers.post['Content-Type'] = 'multipart/form-data;application/json';
                             axios.post(route('movimientos.store'),form)
                                 .then((res) => {
@@ -330,18 +366,23 @@
                 this.$refs["tablaProductos"].clearSelection();
             },
             handleSelectionChange(val) {
-                console.log(val)
                 this.model.productoSeleccion = val;
                 if(this.model.productoSeleccion.length>0){
                     this.disableForm = false;
                 }else if(this.model.productoSeleccion.length==0){
                     this.disableForm = true;
                 }
+                this.model.productoSeleccion.forEach(item => {
+                    this.cantidades.push({producto:item.id,cantidad:null});
+                })
             },
             upload(imagen, lista){
                 this.listaArchivo = lista;
                 console.log(imagen, lista)
             },
+            addCantidades(producto){
+                console.log(producto)
+            }
         }
     }
 </script>

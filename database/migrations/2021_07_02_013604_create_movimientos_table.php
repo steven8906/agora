@@ -16,12 +16,17 @@ class CreateMovimientosTable extends Migration
         Schema::create('movimientos', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('id_producto')->unsigned();
-            $table->integer('almacen_entrada')->unsigned();
-            $table->integer('almacen_destino')->unsigned();
+            $table->bigInteger('almacen_entrada')->unsigned();
+            $table->bigInteger('almacen_destino')->unsigned();
+            $table->bigInteger('id_almacen_final')->unsigned();
             $table->enum('tipo_movimiento',['ENTRE_ALMACENES','REGULAR']);
             $table->string('token')->nullable(false);
+            $table->string('ubicacion')->nullable(true);
+            $table->float('cantidad')->nullable(true)->default(null);
+            $table->date('fecha')->nullable(true);
+            $table->string('folio_documento')->nullable(true);
             $table->timestamps();
-
+            //relaciones entre tablas
             $table->foreign('id_producto')
                 ->references('id')
                 ->on('productos');
@@ -31,6 +36,10 @@ class CreateMovimientosTable extends Migration
                 ->on('almacenes');
 
             $table->foreign('almacen_destino')
+                ->references('id')
+                ->on('almacenes');
+
+            $table->foreign('id_almacen_final')
                 ->references('id')
                 ->on('almacenes');
         });
