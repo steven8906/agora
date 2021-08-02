@@ -1,8 +1,8 @@
 <template>
     <app-main selected="10" titulo="Productos" :usuario="usuario">
         <el-button-group>
-            <el-button type="primary" icon="el-icon-edit" @click="modalForm = true"></el-button>
-            <el-button type="primary" icon="el-icon-paperclip"></el-button>
+            <el-button type="primary" icon="el-icon-circle-plus-outline" @click="modalForm = true"></el-button>
+<!--            <el-button type="primary" icon="el-icon-paperclip"></el-button>-->
         </el-button-group>
         <!--        Tabla y paginacion-->
         <br>
@@ -94,7 +94,7 @@
         </el-row>
         <!--        Tabla y paginacion-->
         <!--  Inicio-Formulario de registro y actualizacion-->
-        <el-dialog title="Formulario de Productos" v-model="modalForm" width="40%">
+        <el-dialog title="Formulario de Productos" v-model="modalForm" width="40%" :before-close="cancelarEdicion">
             <el-form ref="form"  label-width="150px" :model="model">
                 <el-form-item label="Categoría:"
                               :rules="[{required:true, message:'Campo obligatorio'}]">
@@ -105,7 +105,12 @@
                 <el-form-item label="Proveedor:"
                               :rules="[{required:true, message:'Campo obligatorio'}]">
                     <el-select v-model="model.idproveedor" placeholder="Proveedor">
-                        <el-option v-for="(proveedor, index) in proveedores" :key="index" :label="proveedor.nombre" :value="proveedor.id"></el-option>
+                        <el-option v-for="(proveedor, index) in proveedores"
+                                   :key="index"
+                                   :label="proveedor.nombre"
+                                   :value="proveedor.id"
+                                   :disabled="!proveedor.condicion"
+                                   ></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="Producto:"
@@ -145,34 +150,35 @@
                 </el-form-item>
                 <el-form-item label="Precio compra:"
                               :prop="precio_compra"
-                              :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message: 'Ingrese un precio válido'}]">
-                    <el-input placeholder="Precio compra" v-model.number="model.precio_compra" clearable></el-input>
+                              :rules="[{required:true, message:'Campo obligatorio'}]">
+                    <el-input-number v-model.number="model.precio_compra" placeholder="Precio compra" :controls="false"></el-input-number>
+<!--                    <el-input placeholder="Precio compra" v-model.number="model.precio_compra" clearable></el-input>-->
                 </el-form-item>
                 <el-form-item label="Precio venta:"
                               :prop="precio_venta"
-                              :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message: 'Ingrese un precio válido'}]">
-                    <el-input placeholder="Precio venta" v-model.number="model.precio_venta" clearable></el-input>
+                              :rules="[{required:true, message:'Campo obligatorio'}]">
+                    <el-input-number v-model.number="model.precio_venta" placeholder="Precio venta" :controls="false"></el-input-number>
                 </el-form-item>
                 <el-collapse>
                     <el-collapse-item title="Precio minímo" name="2">
                         <el-form-item label="Precio minímo:"
                                       :prop="precio_minimo"
                                       :rules="[{type:'number', message: 'Ingrese un precio válido'}]">
-                            <el-input placeholder="Precio minímo" v-model.number="model.precio_minimo" clearable></el-input>
+                            <el-input-number v-model.number="model.precio_minimo" placeholder="Precio minímo" :controls="false"></el-input-number>
                         </el-form-item>
                     </el-collapse-item>
                     <el-collapse-item title="Precio liquidación" name="3">
                         <el-form-item label="Precio liquidación:"
                                       :prop="precio_liquidacion"
                                       :rules="[{type:'number', message: 'Ingrese un precio válido'}]">
-                            <el-input placeholder="Precio liquidación" v-model.number="model.precio_liquidacion" clearable></el-input>
+                            <el-input-number v-model.number="model.precio_liquidacion" placeholder="Precio liquidación" :controls="false"></el-input-number>
                         </el-form-item>
                     </el-collapse-item>
                     <el-collapse-item title="Precio mayorista" name="4">
                         <el-form-item label="Precio mayorista:"
                                       :prop="precio_mayorista"
                                       :rules="[{type:'number', message: 'Ingrese un precio válido'}]">
-                            <el-input placeholder="Precio mayorista" v-model.number="model.precio_mayorista" clearable></el-input>
+                            <el-input-number v-model.number="model.precio_mayorista" placeholder="Precio mayorista" :controls="false"></el-input-number>
                         </el-form-item>
                     </el-collapse-item>
                 </el-collapse>
@@ -202,10 +208,10 @@
             </el-form>
             <el-divider></el-divider>
             <template #footer>
-                <img :data-value="this.model.codigo" :data-text="this.model.codigo" class="codigo" style="margin: auto;"/>
+<!--                <img :data-value="this.model.codigo" :data-text="this.model.codigo" class="codigo" style="margin: auto;" />-->
                 <el-divider></el-divider>
                 <span class="dialog-footer">
-                  <el-button @click="modalForm = false">Cancelar</el-button>
+                  <el-button @click="cancelarEdicion">Cancelar</el-button>
                   <el-button type="primary" @click="guardar">Aceptar</el-button>
                 </span>
             </template>
@@ -332,19 +338,21 @@
                         this.dataProductos = res.data.info.productos;
                         this.errores = null;
                         this.modalForm = false;
-                        this.limpiarModelo();
-                        this.model.codigo = res.data.codigo_barras;
                     })
                     .catch((error) => {
                         let aux = [];
                         let info = Object.values(error.response.data.errors);
                         info.forEach((item) => aux.push(item[0]));
                         this.errores = aux;
-                    }).finally(() =>
-                    setTimeout(() => {
-                        this.loading = false
-                    }, 1000)
-                );
+                    })
+                    .finally(() =>
+                        setTimeout(() => {
+                            this.model = {}
+                            axios.get(route('helpers.guid'))
+                                .then(res_cod => this.model.codigo = res_cod.data)
+                            this.loading = false
+                        }, 1000)
+                    );
             },
             editarModal(row) {
                 this.modalForm = true;
@@ -408,6 +416,10 @@
                     setTimeout(() => {
                         this.loading = false
                     }, 1000));
+            },
+            cancelarEdicion(){
+                this.model = {}
+                this.modalForm = false
             }
         },
         mounted() {

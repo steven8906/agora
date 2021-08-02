@@ -22096,7 +22096,31 @@ __webpack_require__.r(__webpack_exports__);
       this.model.id = model.id;
     },
     desactivar: function desactivar(row) {
-      console.log(row.id);
+      var _this2 = this;
+
+      this.loading = true;
+      axios.post(route('almacenes.disable'), {
+        id: row.id,
+        condicion: row.condicion
+      }).then(function (res) {
+        _this2.$notify({
+          title: 'Transacción exitosa',
+          message: 'Solicitud realizada con éxito',
+          type: 'success'
+        });
+
+        _this2.dataAlmacenes = res.data.almacenes;
+      })["catch"](function (error) {
+        _this2.$notify({
+          title: 'Transacción exitosa',
+          message: error.response.data.errors,
+          type: 'danger'
+        });
+      })["finally"](function () {
+        return setTimeout(function () {
+          _this2.loading = false;
+        }, 1000);
+      });
     },
     //bloque obligatorio para paginacion de tabla
     handleCurrentChange: function handleCurrentChange(val) {
@@ -24249,10 +24273,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this2.dataProductos = res.data.info.productos;
         _this2.errores = null;
         _this2.modalForm = false;
-
-        _this2.limpiarModelo();
-
-        _this2.model.codigo = res.data.codigo_barras;
       })["catch"](function (error) {
         var aux = [];
         var info = Object.values(error.response.data.errors);
@@ -24262,6 +24282,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this2.errores = aux;
       })["finally"](function () {
         return setTimeout(function () {
+          _this2.model = {};
+          axios.get(route('helpers.guid')).then(function (res_cod) {
+            return _this2.model.codigo = res_cod.data;
+          });
           _this2.loading = false;
         }, 1000);
       });
@@ -24336,6 +24360,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           _this4.loading = false;
         }, 1000);
       });
+    },
+    cancelarEdicion: function cancelarEdicion() {
+      this.model = {};
+      this.modalForm = false;
     }
   },
   mounted: function mounted() {
@@ -24891,6 +24919,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       })["finally"](function () {
         return setTimeout(function () {
           _this.loading = false;
+          _this.model = {};
         }, 1000);
       });
     },
@@ -24899,12 +24928,36 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var model = this.dataProveedores.filter(function (proveedor) {
         return proveedor.id == row.id;
       })[0];
-      this.model.nombre = model.nombre;
-      this.model.descripcion = model.descripcion;
-      this.model.id = model.id;
+      this.model = model;
+      this.model.telefono = parseInt(model.telefono);
+      this.model.telefono_contacto = parseInt(model.telefono_contacto);
     },
     desactivar: function desactivar(row) {
-      console.log(row.id);
+      var _this2 = this;
+
+      this.loading = true;
+      axios.post(route('proveedores.disable'), {
+        id: row.id,
+        condicion: row.condicion
+      }).then(function (res) {
+        _this2.$notify({
+          title: 'Transacción exitosa',
+          message: 'Solicitud realizada con éxito',
+          type: 'success'
+        });
+
+        _this2.dataProveedores = res.data.proveedores;
+      })["catch"](function (error) {
+        _this2.$notify({
+          title: 'Transacción exitosa',
+          message: error.response.data.errors,
+          type: 'danger'
+        });
+      })["finally"](function () {
+        return setTimeout(function () {
+          _this2.loading = false;
+        }, 1000);
+      });
     },
     //bloque obligatorio para paginacion de tabla
     handleCurrentChange: function handleCurrentChange(val) {
@@ -27002,7 +27055,7 @@ var _hoisted_2 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("
 );
 
 var _hoisted_3 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-message c-white",
+  "class": "el-icon-takeaway-box c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27017,7 +27070,7 @@ var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("
 );
 
 var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-box c-white",
+  "class": "el-icon-takeaway-box c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27050,7 +27103,7 @@ var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("
 var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Movimientos ");
 
 var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-message c-white",
+  "class": "el-icon-sugar c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27065,7 +27118,7 @@ var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(
 );
 
 var _hoisted_13 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-sort c-white",
+  "class": "el-icon-goods c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27076,7 +27129,7 @@ var _hoisted_13 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(
 var _hoisted_14 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Productos ");
 
 var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-box c-white",
+  "class": "el-icon-connection c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27087,7 +27140,7 @@ var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(
 var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Multialmacenes ");
 
 var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-box c-white",
+  "class": "el-icon-help c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27098,7 +27151,7 @@ var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(
 var _hoisted_18 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Kits ");
 
 var _hoisted_19 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-star-off c-white",
+  "class": "el-icon-wind-power c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27109,7 +27162,7 @@ var _hoisted_19 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(
 var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Unidades ");
 
 var _hoisted_21 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-message c-white",
+  "class": "el-icon-shopping-cart-full c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27124,7 +27177,7 @@ var _hoisted_22 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(
 );
 
 var _hoisted_23 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-sort c-white",
+  "class": "el-icon-money c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27135,7 +27188,7 @@ var _hoisted_23 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(
 var _hoisted_24 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Ingresos ");
 
 var _hoisted_25 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-box c-white",
+  "class": "el-icon-suitcase c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27146,7 +27199,7 @@ var _hoisted_25 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(
 var _hoisted_26 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Proveedores ");
 
 var _hoisted_27 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-message c-white",
+  "class": "el-icon-bank-card c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27161,7 +27214,7 @@ var _hoisted_28 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(
 );
 
 var _hoisted_29 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-sort c-white",
+  "class": "el-icon-discount c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27172,7 +27225,7 @@ var _hoisted_29 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(
 var _hoisted_30 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Ventas ");
 
 var _hoisted_31 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-box c-white",
+  "class": "el-icon-user c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -27183,7 +27236,7 @@ var _hoisted_31 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(
 var _hoisted_32 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Clientes ");
 
 var _hoisted_33 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("b", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("i", {
-  "class": "el-icon-box c-white",
+  "class": "el-icon-tickets c-white",
   style: {
     "vertical-align": "baseline"
   }
@@ -28240,14 +28293,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
           return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
             type: "primary",
-            icon: "el-icon-edit",
+            icon: "el-icon-circle-plus-outline",
             onClick: _cache[1] || (_cache[1] = function ($event) {
               return $data.modalForm = true;
             })
-          }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
-            type: "primary",
-            icon: "el-icon-paperclip"
-          })];
+          }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("            <el-button type=\"primary\" icon=\"el-icon-paperclip\"></el-button>")];
         }),
         _: 1
         /* STABLE */
@@ -34862,8 +34912,6 @@ var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNo
 var _hoisted_21 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Aceptar");
 
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  var _this = this;
-
   var _component_el_button = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-button");
 
   var _component_el_button_group = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-button-group");
@@ -34900,6 +34948,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
   var _component_el_form_item = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-form-item");
 
+  var _component_el_input_number = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-input-number");
+
   var _component_el_collapse_item = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-collapse-item");
 
   var _component_el_collapse = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-collapse");
@@ -34928,14 +34978,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
           return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
             type: "primary",
-            icon: "el-icon-edit",
+            icon: "el-icon-circle-plus-outline",
             onClick: _cache[1] || (_cache[1] = function ($event) {
               return $data.modalForm = true;
             })
-          }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
-            type: "primary",
-            icon: "el-icon-paperclip"
-          })];
+          }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("            <el-button type=\"primary\" icon=\"el-icon-paperclip\"></el-button>")];
         }),
         _: 1
         /* STABLE */
@@ -35158,25 +35205,15 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("        Tabla y paginacion"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("  Inicio-Formulario de registro y actualizacion"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_dialog, {
         title: "Formulario de Productos",
         modelValue: $data.modalForm,
-        "onUpdate:modelValue": _cache[19] || (_cache[19] = function ($event) {
+        "onUpdate:modelValue": _cache[18] || (_cache[18] = function ($event) {
           return $data.modalForm = $event;
         }),
-        width: "40%"
+        width: "40%",
+        "before-close": $options.cancelarEdicion
       }, {
         footer: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("img", {
-            "data-value": _this.model.codigo,
-            "data-text": _this.model.codigo,
-            "class": "codigo",
-            style: {
-              "margin": "auto"
-            }
-          }, null, 8
-          /* PROPS */
-          , ["data-value", "data-text"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
-            onClick: _cache[18] || (_cache[18] = function ($event) {
-              return $data.modalForm = false;
-            })
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("                <img :data-value=\"this.model.codigo\" :data-text=\"this.model.codigo\" class=\"codigo\" style=\"margin: auto;\" />"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_divider), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+            onClick: $options.cancelarEdicion
           }, {
             "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
               return [_hoisted_13];
@@ -35184,7 +35221,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
             _: 1
             /* STABLE */
 
-          }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
+          }, 8
+          /* PROPS */
+          , ["onClick"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
             type: "primary",
             onClick: $options.guardar
           }, {
@@ -35263,10 +35302,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_el_option, {
                           key: index,
                           label: proveedor.nombre,
-                          value: proveedor.id
+                          value: proveedor.id,
+                          disabled: !proveedor.condicion
                         }, null, 8
                         /* PROPS */
-                        , ["label", "value"]);
+                        , ["label", "value", "disabled"]);
                       }), 128
                       /* KEYED_FRAGMENT */
                       ))];
@@ -35501,14 +35541,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                 rules: [{
                   required: true,
                   message: 'Campo obligatorio'
-                }, {
-                  type: 'number',
-                  message: 'Ingrese un precio válido'
                 }]
               }, {
                 "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
-                    placeholder: "Precio compra",
+                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input_number, {
                     modelValue: $data.model.precio_compra,
                     "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
                       return $data.model.precio_compra = $event;
@@ -35516,10 +35552,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                     modelModifiers: {
                       number: true
                     },
-                    clearable: ""
+                    placeholder: "Precio compra",
+                    controls: false
                   }, null, 8
                   /* PROPS */
-                  , ["modelValue"])];
+                  , ["modelValue"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("                    <el-input placeholder=\"Precio compra\" v-model.number=\"model.precio_compra\" clearable></el-input>")];
                 }),
                 _: 1
                 /* STABLE */
@@ -35532,14 +35569,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                 rules: [{
                   required: true,
                   message: 'Campo obligatorio'
-                }, {
-                  type: 'number',
-                  message: 'Ingrese un precio válido'
                 }]
               }, {
                 "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
-                    placeholder: "Precio venta",
+                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input_number, {
                     modelValue: $data.model.precio_venta,
                     "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
                       return $data.model.precio_venta = $event;
@@ -35547,7 +35580,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                     modelModifiers: {
                       number: true
                     },
-                    clearable: ""
+                    placeholder: "Precio venta",
+                    controls: false
                   }, null, 8
                   /* PROPS */
                   , ["modelValue"])];
@@ -35573,8 +35607,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                         }]
                       }, {
                         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
-                            placeholder: "Precio minímo",
+                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input_number, {
                             modelValue: $data.model.precio_minimo,
                             "onUpdate:modelValue": _cache[13] || (_cache[13] = function ($event) {
                               return $data.model.precio_minimo = $event;
@@ -35582,7 +35615,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                             modelModifiers: {
                               number: true
                             },
-                            clearable: ""
+                            placeholder: "Precio minímo",
+                            controls: false
                           }, null, 8
                           /* PROPS */
                           , ["modelValue"])];
@@ -35611,8 +35645,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                         }]
                       }, {
                         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
-                            placeholder: "Precio liquidación",
+                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input_number, {
                             modelValue: $data.model.precio_liquidacion,
                             "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
                               return $data.model.precio_liquidacion = $event;
@@ -35620,7 +35653,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                             modelModifiers: {
                               number: true
                             },
-                            clearable: ""
+                            placeholder: "Precio liquidación",
+                            controls: false
                           }, null, 8
                           /* PROPS */
                           , ["modelValue"])];
@@ -35649,8 +35683,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                         }]
                       }, {
                         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
-                            placeholder: "Precio mayorista",
+                          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input_number, {
                             modelValue: $data.model.precio_mayorista,
                             "onUpdate:modelValue": _cache[15] || (_cache[15] = function ($event) {
                               return $data.model.precio_mayorista = $event;
@@ -35658,7 +35691,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                             modelModifiers: {
                               number: true
                             },
-                            clearable: ""
+                            placeholder: "Precio mayorista",
+                            controls: false
                           }, null, 8
                           /* PROPS */
                           , ["modelValue"])];
@@ -35766,17 +35800,17 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
       }, 8
       /* PROPS */
-      , ["modelValue"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("  Fin-Formulario de registro y actualizacion"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("  Inicio-Formulario de registro multialmacen"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_dialog, {
+      , ["modelValue", "before-close"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("  Fin-Formulario de registro y actualizacion"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("  Inicio-Formulario de registro multialmacen"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_dialog, {
         title: "Formulario de registro a multialmacén",
         modelValue: $data.modalMultialmacen,
-        "onUpdate:modelValue": _cache[21] || (_cache[21] = function ($event) {
+        "onUpdate:modelValue": _cache[20] || (_cache[20] = function ($event) {
           return $data.modalMultialmacen = $event;
         }),
         width: "30%"
       }, {
         footer: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
           return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
-            onClick: _cache[20] || (_cache[20] = function ($event) {
+            onClick: _cache[19] || (_cache[19] = function ($event) {
               return $data.modalMultialmacen = false;
             })
           }, {
@@ -37027,10 +37061,6 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
 
   var _component_el_form_item = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-form-item");
 
-  var _component_el_option = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-option");
-
-  var _component_el_select = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-select");
-
   var _component_error_form = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("error-form");
 
   var _component_el_form = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("el-form");
@@ -37051,14 +37081,11 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
         "default": _withId(function () {
           return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
             type: "primary",
-            icon: "el-icon-edit",
+            icon: "el-icon-circle-plus-outline",
             onClick: _cache[1] || (_cache[1] = function ($event) {
               return $data.modalForm = true;
             })
-          }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
-            type: "primary",
-            icon: "el-icon-paperclip"
-          })];
+          }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("            <el-button type=\"primary\" icon=\"el-icon-paperclip\"></el-button>")];
         }),
         _: 1
         /* STABLE */
@@ -37132,13 +37159,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
                         label: "Tel. Contacto",
                         prop: "telefono_contacto"
-                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
-                        label: "Tipo Documento",
-                        prop: "tipo_documento"
-                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
-                        label: "N. Documento",
-                        prop: "num_documento"
-                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
+                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("                        <el-table-column label=\"Tipo Documento\" prop=\"tipo_documento\"></el-table-column>"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("                        <el-table-column label=\"N. Documento\" prop=\"num_documento\"></el-table-column>"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
                         label: "Dirección",
                         prop: "direccion"
                       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_table_column, {
@@ -37248,14 +37269,14 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("        Tabla y paginacion"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("  Inicio-Formulario de registro y actualizacion"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_dialog, {
         title: "Formulario de Proveedores",
         modelValue: $data.modalForm,
-        "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
+        "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
           return $data.modalForm = $event;
         }),
         width: "30%"
       }, {
         footer: _withId(function () {
           return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("span", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_button, {
-            onClick: _cache[11] || (_cache[11] = function ($event) {
+            onClick: _cache[9] || (_cache[9] = function ($event) {
               return $data.modalForm = false;
             })
           }, {
@@ -37317,8 +37338,7 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                   message: 'Campo obligatorio'
                 }, {
                   type: 'number',
-                  message: 'Debe ingresar un teléfono válido',
-                  trigger: ['blur', 'change']
+                  message: 'Debe ingresar un teléfono válido'
                 }]
               }, {
                 "default": _withId(function () {
@@ -37416,75 +37436,14 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
                 _: 1
                 /* STABLE */
 
-              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
-                label: "Tipo Documento",
-                prop: "tipo_documento"
-              }, {
-                "default": _withId(function () {
-                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_select, {
-                    modelValue: $data.model.tipo_documento,
-                    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
-                      return $data.model.tipo_documento = $event;
-                    }),
-                    placeholder: "Tipo Documento"
-                  }, {
-                    "default": _withId(function () {
-                      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_option, {
-                        label: "DNI",
-                        value: "DNI"
-                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_option, {
-                        label: "RUC",
-                        value: "RUC"
-                      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_option, {
-                        label: "PASS",
-                        value: "PASS"
-                      })];
-                    }),
-                    _: 1
-                    /* STABLE */
-
-                  }, 8
-                  /* PROPS */
-                  , ["modelValue"])];
-                }),
-                _: 1
-                /* STABLE */
-
-              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
-                label: "N. Documento:",
-                prop: "num_documento",
-                rules: [{
-                  type: 'number',
-                  message: 'Debe ingresar un número de documento válido',
-                  trigger: ['blur', 'change']
-                }]
-              }, {
-                "default": _withId(function () {
-                  return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
-                    placeholder: "N. Documento",
-                    modelValue: $data.model.num_documento,
-                    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
-                      return $data.model.num_documento = $event;
-                    }),
-                    modelModifiers: {
-                      number: true
-                    },
-                    clearable: ""
-                  }, null, 8
-                  /* PROPS */
-                  , ["modelValue"])];
-                }),
-                _: 1
-                /* STABLE */
-
-              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
+              }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("<el-form-item label=\"Tipo Documento\" prop=\"tipo_documento\">\n                    <el-select v-model=\"model.tipo_documento\" placeholder=\"Tipo Documento\">\n                        <el-option label=\"DNI\" value=\"DNI\"></el-option>\n                        <el-option label=\"RUC\" value=\"RUC\"></el-option>\n                        <el-option label=\"PASS\" value=\"PASS\"></el-option>\n                    </el-select>\n                </el-form-item>"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("<el-form-item label=\"N. Documento:\"\n                              prop=\"num_documento\"\n                              :rules=\"[{type: 'number', message: 'Debe ingresar un número de documento válido', trigger: ['blur', 'change'] }]\"\n                >\n                    <el-input placeholder=\"N. Documento\" v-model.number=\"model.num_documento\" clearable></el-input>\n                </el-form-item>"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_form_item, {
                 label: "Dirección:"
               }, {
                 "default": _withId(function () {
                   return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_el_input, {
                     placeholder: "Dirección",
                     modelValue: $data.model.direccion,
-                    "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
+                    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
                       return $data.model.direccion = $event;
                     }),
                     clearable: ""

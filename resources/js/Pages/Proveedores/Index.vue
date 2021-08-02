@@ -1,8 +1,8 @@
 <template>
     <app-main selected="10" titulo="Proveedores" :usuario="usuario">
         <el-button-group>
-            <el-button type="primary" icon="el-icon-edit" @click="modalForm = true"></el-button>
-            <el-button type="primary" icon="el-icon-paperclip"></el-button>
+            <el-button type="primary" icon="el-icon-circle-plus-outline" @click="modalForm = true"></el-button>
+<!--            <el-button type="primary" icon="el-icon-paperclip"></el-button>-->
         </el-button-group>
         <!--        Tabla y paginacion-->
         <br>
@@ -26,8 +26,8 @@
                         <el-table-column label="Email" prop="email"></el-table-column>
                         <el-table-column label="Contacto" prop="contacto"></el-table-column>
                         <el-table-column label="Tel. Contacto" prop="telefono_contacto"></el-table-column>
-                        <el-table-column label="Tipo Documento" prop="tipo_documento"></el-table-column>
-                        <el-table-column label="N. Documento" prop="num_documento"></el-table-column>
+<!--                        <el-table-column label="Tipo Documento" prop="tipo_documento"></el-table-column>-->
+<!--                        <el-table-column label="N. Documento" prop="num_documento"></el-table-column>-->
                         <el-table-column label="Dirección" prop="direccion"></el-table-column>
                         <el-table-column align="right"
                                          fixed="right"
@@ -87,7 +87,7 @@
                               prop="telefono"
                               :rules="[
                                   {required:true, message:'Campo obligatorio'},
-                                  {type: 'number', message: 'Debe ingresar un teléfono válido', trigger: ['blur', 'change']},
+                                  {type: 'number', message: 'Debe ingresar un teléfono válido'},
                                   ]">
                     <el-input placeholder="Teléfono" v-model.number="model.telefono" clearable></el-input>
                 </el-form-item>
@@ -111,19 +111,19 @@
                               ]">
                     <el-input placeholder="Tel. Contacto" v-model.number="model.telefono_contacto" clearable></el-input>
                 </el-form-item>
-                <el-form-item label="Tipo Documento" prop="tipo_documento">
+                <!--<el-form-item label="Tipo Documento" prop="tipo_documento">
                     <el-select v-model="model.tipo_documento" placeholder="Tipo Documento">
                         <el-option label="DNI" value="DNI"></el-option>
                         <el-option label="RUC" value="RUC"></el-option>
                         <el-option label="PASS" value="PASS"></el-option>
                     </el-select>
-                </el-form-item>
-                <el-form-item label="N. Documento:"
+                </el-form-item>-->
+                <!--<el-form-item label="N. Documento:"
                               prop="num_documento"
                               :rules="[{type: 'number', message: 'Debe ingresar un número de documento válido', trigger: ['blur', 'change'] }]"
                 >
                     <el-input placeholder="N. Documento" v-model.number="model.num_documento" clearable></el-input>
-                </el-form-item>
+                </el-form-item>-->
                 <el-form-item label="Dirección:">
                     <el-input placeholder="Dirección" v-model="model.direccion" clearable></el-input>
                 </el-form-item>
@@ -203,20 +203,42 @@
                         info.forEach((item) => aux.push(item[0]));
                         this.errores = aux;
                     }).finally(() =>
-                    setTimeout(() => {
-                        this.loading = false
-                    }, 1000)
-                );
+                        setTimeout(() => {
+                            this.loading = false
+                            this.model = {}
+                        }, 1000)
+                    );
             },
             editarModal(row) {
                 this.modalForm = true;
                 let model = this.dataProveedores.filter(proveedor => proveedor.id == row.id)[0];
-                this.model.nombre = model.nombre;
-                this.model.descripcion = model.descripcion;
-                this.model.id = model.id;
+                this.model = model;
+                this.model.telefono = parseInt(model.telefono);
+                this.model.telefono_contacto = parseInt(model.telefono_contacto);
             },
             desactivar(row) {
-                console.log(row.id);
+                this.loading = true
+                axios.post(route('proveedores.disable'), {id: row.id, condicion: row.condicion})
+                    .then((res) => {
+                        this.$notify({
+                            title: 'Transacción exitosa',
+                            message: 'Solicitud realizada con éxito',
+                            type: 'success'
+                        });
+                        this.dataProveedores = res.data.proveedores;
+                    })
+                    .catch((error) => {
+                        this.$notify({
+                            title: 'Transacción exitosa',
+                            message: error.response.data.errors,
+                            type: 'danger'
+                        });
+                    })
+                    .finally(() =>
+                        setTimeout(() => {
+                            this.loading = false
+                        }, 1000)
+                    );
             },
             //bloque obligatorio para paginacion de tabla
             handleCurrentChange(val) {

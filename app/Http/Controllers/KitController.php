@@ -81,20 +81,20 @@ class KitController extends Controller
 
     private function getKits(){
         return Kit::from('kits AS a')
-                    ->selectRaw('ANY_VALUE ( a.condicion ) AS condicion,
-                                ANY_VALUE ( a.codigo ) AS codigo,
-                                ANY_VALUE ( a.token ) AS token,
-                                ANY_VALUE ( a.nombre ) AS nombre,
-                                ANY_VALUE ( a.descripcion ) AS descripcion,
-                                ANY_VALUE ( a.ubicacion ) AS ubicacion,
+                    ->selectRaw('( a.condicion ) AS condicion,
+                                ( a.codigo ) AS codigo,
+                                ( a.token ) AS token,
+                                ( a.nombre ) AS nombre,
+                                ( a.descripcion ) AS descripcion,
+                                ( a.ubicacion ) AS ubicacion,
                                 GROUP_CONCAT( b.nombre SEPARATOR "|") AS producto,
 	                            GROUP_CONCAT( b.id SEPARATOR "|" ) AS id_producto,
                                 GROUP_CONCAT( b.path_imagen SEPARATOR "|" ) AS path_imagen,
-                                ANY_VALUE ( a.precio_compra ) AS precio_compra,
-                                ANY_VALUE ( a.precio_venta ) AS precio_venta,
-                                ANY_VALUE ( a.precio_minimo ) AS precio_minimo,
-                                ANY_VALUE ( a.precio_mayorista ) AS precio_mayorista,
-                                ANY_VALUE ( a.precio_liquidacion ) AS precio_liquidacion')
+                                ( a.precio_compra ) AS precio_compra,
+                                ( a.precio_venta ) AS precio_venta,
+                                ( a.precio_minimo ) AS precio_minimo,
+                                ( a.precio_mayorista ) AS precio_mayorista,
+                                ( a.precio_liquidacion ) AS precio_liquidacion')
                     ->join('productos AS b', 'b.id', '=', 'a.id_producto')
                     ->groupBy('a.codigo')
                     ->get();

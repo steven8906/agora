@@ -13,6 +13,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\UnidadesController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 /*
@@ -37,9 +38,12 @@ Route::get('/', function () {
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 
-Route::get('/almacenes', [AlmacenesController::class, 'index'])->name('almacenes.index');
-Route::post('/almacenes/guardar', [AlmacenesController::class, 'store'])->name('almacenes.store');
-Route::post('/almacenes/actualizar', [AlmacenesController::class, 'update'])->name('almacenes.update');
+Route::group(['prefix' => '/almacenes'], function (){
+    Route::get('/', [AlmacenesController::class, 'index'])->name('almacenes.index');
+    Route::post('almacenes/guardar', [AlmacenesController::class, 'store'])->name('almacenes.store');
+    Route::post('almacenes/actualizar', [AlmacenesController::class, 'update'])->name('almacenes.update');
+    Route::post('desactivar', [AlmacenesController::class, 'disable'])->name('almacenes.disable');
+});
 
 Route::get('/categorias', [CategoriasController::class, 'index'])->name('categorias.index');
 Route::post('/categorias/guardar', [CategoriasController::class, 'store'])->name('categorias.store');
@@ -62,9 +66,12 @@ Route::get('/productos/{producto}', [ProductosController::class, 'indexID'])->na
 Route::post('/productos/guardar', [ProductosController::class, 'store'])->name('productos.store');
 Route::post('/productos/actualizar', [ProductosController::class, 'update'])->name('productos.update');
 
-Route::get('/proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
-Route::post('/proveedores/guardar', [ProveedorController::class, 'store'])->name('proveedores.store');
-Route::post('/proveedores/actualizar', [ProveedorController::class, 'update'])->name('proveedores.update');
+Route::group(['prefix' => '/proveedores'], function (){
+    Route::get('/', [ProveedorController::class, 'index'])->name('proveedores.index');
+    Route::post('guardar', [ProveedorController::class, 'store'])->name('proveedores.store');
+    Route::post('actualizar', [ProveedorController::class, 'update'])->name('proveedores.update');
+    Route::post('desactivar', [ProveedorController::class, 'disable'])->name('proveedores.disable');
+});
 
 Route::group(['prefix' => 'multialmacen'] , function (){
     Route::get('/producto/{id_producto}', [ProductosController::class, 'multialmacenProducto'])->name('multialmacen.producto');
@@ -97,3 +104,9 @@ Route::post('/cotizaciones/guardar', [CotizacionesController::class, 'store'])->
 Route::get('/cotizaciones/edit/{id}', [CotizacionesController::class, 'edit'])->name('cotizaciones.edit');
 Route::post('/cotizaciones/actualizar/{id}', [CotizacionesController::class, 'update'])->name('cotizaciones.update');
 Route::post('/cotizaciones/guardarFileExcel', [CotizacionesController::class, 'guardarFileExcel'])->name('cotizaciones.guardarFileExcel');
+
+Route::group(['prefix' => 'helpers'], function (){
+   Route::get('guid', function (){
+       return Str::limit(preg_replace('/[^0-9]/', '', md5(time()) . rand(1000, 10000)), 8, '');
+   })->name('helpers.guid');
+});
