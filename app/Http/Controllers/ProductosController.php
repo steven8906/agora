@@ -59,7 +59,7 @@ class ProductosController extends Controller
         $path_imagen             = asset("uploads/{$nombre_archivo_md5}");
         $model                   = $request->only('idcategoria', 'idproveedor', 'nombre', 'codigo', 'tipo', 'unidad_entrada',
                                                         'unidad_salida', 'precio_compra', 'precio_venta', 'precio_minimo', 'precio_liquidacion',
-                                                        'precio_mayorista');
+                                                        'precio_mayorista', 'descripcion', 'ubicacion', 'codigo_alterno');
         $model['nombre_original_imagen']  = $nombre_archivo_original;
         $model['nombre_unico_imagen']     = $nombre_archivo_md5;
         $model['path_imagen']             = $path_imagen;
@@ -88,7 +88,7 @@ class ProductosController extends Controller
             'precio_minimo'      => 'numeric',
             'precio_liquidacion' => 'numeric',
             'precio_mayorista'   => 'numeric',
-            'imagen'             => 'mimes:jpeg,jpg,png,gif',
+        //    'imagen'             => 'mimes:jpeg,jpg,png,gif',
         );
 
         $mensaje = array(
@@ -97,14 +97,29 @@ class ProductosController extends Controller
         );
         $request->offsetUnset('categoria');
         $request->offsetUnset('proveedor');
-        $request->offsetSet('unidad_entrada', $request->id_unidad);
-        $request->offsetSet('unidad_salida', $request->id_unidad);
+        $request->offsetSet('unidad_entrada', $request->unidad_entrada);
+        $request->offsetSet('unidad_salida', $request->unidad_salida);
         $request->offsetUnset('id_unidad');
         $request->offsetUnset('unidad');
         $request->offsetUnset('created_at');
         $request->offsetUnset('updated_at');
         $request->validate($reglas, $mensaje);
-        Producto::where('id', $request->only('id'))->update($request->all());
+
+        $model = $request->only('idcategoria', 'idproveedor', 'nombre', 'codigo', 'tipo', 'unidad_entrada', 'descripcion',
+                                    'unidad_salida', 'precio_compra', 'precio_venta', 'precio_minimo', 'precio_liquidacion', 'ubicacion',
+                                    'precio_mayorista', 'codigo_alterno');
+
+        if ($request->has('imagen')){
+            $nombre_archivo_md5      = md5(time()) . '_' . $request->file('imagen')->getClientOriginalName();
+            $nombre_archivo_original = $request->file('imagen')->getClientOriginalName();
+            $path_imagen             = asset("uploads/{$nombre_archivo_md5}");
+            $model['nombre_original_imagen']  = $nombre_archivo_original;
+            $model['nombre_unico_imagen']     = $nombre_archivo_md5;
+            $model['path_imagen']             = $path_imagen;
+            $request->file('imagen')->move(public_path() . '/uploads', $nombre_archivo_md5);
+        }
+
+        Producto::where('id', $request->only('id'))->update($model);
         return response()->json(array(
             'success' => true,
             'info' => array(

@@ -15,7 +15,7 @@ class ChangeUniqueCodeToKitTable extends Migration
     {
         Schema::table('kits', function (Blueprint $table) {
             $table->string('nombre', 100)->change();
-            $table->string('token')->nullable(false)->change();
+            $table->string('token', 128)->nullable(false)->change();
         });
     }
 

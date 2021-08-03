@@ -23,6 +23,7 @@ class CreateProveedoresTable extends Migration
             $table->enum('tipo_documento', ['DNI', 'RUC', 'PASS'])->nullable();
             $table->string('num_documento', 20)->nullable();
             $table->string('direccion', 70)->nullable();
+            $table->boolean('condicion')->default(true);
             $table->timestamps();
         });
     }

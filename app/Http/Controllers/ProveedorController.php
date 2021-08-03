@@ -43,7 +43,7 @@ class ProveedorController extends Controller
             'telefono'          => 'required|int',
             'contacto'          => 'required',
             'telefono_contacto' => 'required|int',
-            'num_documento'     => 'int',
+//            'num_documento'     => 'int',
             'email'             => 'email|nullable',
         );
 
@@ -57,5 +57,15 @@ class ProveedorController extends Controller
         $request->validate($reglas, $mensaje);
         Proveedor::where('id', $request->only('id'))->update($request->all());
         return response()->json(array('success' => true, 'info' => Proveedor::all()));
+    }
+
+    public function disable(Request $request)
+    {
+        try {
+            Proveedor::where('id', $request->get('id'))->update(['condicion' => !$request->get('condicion')]);
+            return response()->json(['success' => true, 'info' => 'Solicitud exitosa', 'proveedores' => Proveedor::all()]);
+        }catch (\Exception $ex){
+            return response()->json(['success' => false, 'info' => $ex->getMessage()]);
+        }
     }
 }

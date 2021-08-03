@@ -39,4 +39,14 @@ class AlmacenesController extends Controller
         Almacenes::where('id', $request->only('id'))->update($request->all());
         return response()->json(array('success' => true, 'info' => Almacenes::all()));
     }
+
+    public function disable(Request $request)
+    {
+        try {
+            Almacenes::where('id', $request->get('id'))->update(['condicion' => !$request->get('condicion')]);
+            return response()->json(['success' => true, 'info' => 'Solicitud exitosa', 'almacenes' => Almacenes::all()]);
+        }catch (\Exception $ex){
+            return response()->json(['success' => false, 'info' => $ex->getMessage()]);
+        }
+    }
 }
