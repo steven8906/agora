@@ -8,10 +8,10 @@
       </div>
       <el-menu :default-openeds="[selected]" style="background: #06163A">
         <el-submenu index="0" style="background-color: #06163A">
-          <template #title><b><i class="el-icon-message c-white" style="vertical-align: baseline"></i></b><span class="c-white">Almacénes</span></template>
+          <template #title><b><i class="el-icon-takeaway-box c-white" style="vertical-align: baseline"></i></b><span class="c-white">Almacénes</span></template>
           <inertia-link :href="route('almacenes.index')">
             <el-menu-item index="1" class="b-primary-l c-white">
-              <b><i class="el-icon-box c-white" style="vertical-align: baseline"></i></b>Almacénes
+              <b><i class="el-icon-takeaway-box c-white" style="vertical-align: baseline"></i></b>Almacénes
             </el-menu-item>
           </inertia-link>
           <inertia-link :href="route('categorias.index')">
@@ -26,48 +26,58 @@
           </inertia-link>
         </el-submenu>
         <el-submenu index="4" style="background-color: #06163A">
-          <template #title><b><i class="el-icon-message c-white" style="vertical-align: baseline"></i></b><span class="c-white">Productos</span></template>
-            <inertia-link :href="''">
+          <template #title><b><i class="el-icon-sugar c-white" style="vertical-align: baseline"></i></b><span class="c-white">Productos</span></template>
+            <inertia-link :href="route('productos.index')">
                 <el-menu-item index="5" class="b-primary-l c-white" >
-                    <b><i class="el-icon-sort c-white" style="vertical-align: baseline"></i></b>Productos
+                    <b><i class="el-icon-goods c-white" style="vertical-align: baseline"></i></b>Productos
                 </el-menu-item>
             </inertia-link>
-          <inertia-link :href="''">
+          <inertia-link :href="route('multialmacenes.index')">
+            <el-menu-item index="14" class="b-primary-l c-white">
+              <b><i class="el-icon-connection c-white" style="vertical-align: baseline"></i></b>Multialmacenes
+            </el-menu-item>
+          </inertia-link>
+          <inertia-link :href="route('kit.index')">
             <el-menu-item index="6" class="b-primary-l c-white">
-              <b><i class="el-icon-box c-white" style="vertical-align: baseline"></i></b>Kits
+              <b><i class="el-icon-help c-white" style="vertical-align: baseline"></i></b>Kits
             </el-menu-item>
           </inertia-link>
           <inertia-link :href="route('unidades.index')">
             <el-menu-item index="7" class="b-primary-l c-white">
-              <b><i class="el-icon-star-off c-white" style="vertical-align: baseline"></i></b>Unidades
+              <b><i class="el-icon-wind-power c-white" style="vertical-align: baseline"></i></b>Unidades
             </el-menu-item>
           </inertia-link>
         </el-submenu>
         <el-submenu index="8" style="background-color: #06163A">
-          <template #title><b><i class="el-icon-message c-white" style="vertical-align: baseline"></i></b><span class="c-white">Compras</span></template>
+          <template #title><b><i class="el-icon-shopping-cart-full c-white" style="vertical-align: baseline"></i></b><span class="c-white">Compras</span></template>
             <inertia-link :href="''">
                 <el-menu-item index="9" class="b-primary-l c-white" >
-                    <b><i class="el-icon-sort c-white" style="vertical-align: baseline"></i></b>Ingresos
+                    <b><i class="el-icon-money c-white" style="vertical-align: baseline"></i></b>Ingresos
                 </el-menu-item>
             </inertia-link>
-          <inertia-link :href="''">
+          <inertia-link :href="route('proveedores.index')">
             <el-menu-item index="10" class="b-primary-l c-white">
-              <b><i class="el-icon-box c-white" style="vertical-align: baseline"></i></b>Proveedores
+              <b><i class="el-icon-suitcase c-white" style="vertical-align: baseline"></i></b>Proveedores
             </el-menu-item>
           </inertia-link>
         </el-submenu>
         <el-submenu index="11" style="background-color: #06163A">
-          <template #title><b><i class="el-icon-message c-white" style="vertical-align: baseline"></i></b><span class="c-white">Ventas</span></template>
+          <template #title><b><i class="el-icon-bank-card c-white" style="vertical-align: baseline"></i></b><span class="c-white">Ventas</span></template>
             <inertia-link :href="''">
                 <el-menu-item index="12" class="b-primary-l c-white" >
-                    <b><i class="el-icon-sort c-white" style="vertical-align: baseline"></i></b>Ventas
+                    <b><i class="el-icon-discount c-white" style="vertical-align: baseline"></i></b>Ventas
                 </el-menu-item>
             </inertia-link>
           <inertia-link :href="route('clientes.index')">
             <el-menu-item index="13" class="b-primary-l c-white">
-              <b><i class="el-icon-box c-white" style="vertical-align: baseline"></i></b>Clientes
+              <b><i class="el-icon-user c-white" style="vertical-align: baseline"></i></b>Clientes
             </el-menu-item>
           </inertia-link>
+        <inertia-link :href="route('cotizaciones.index')">
+            <el-menu-item index="14" class="b-primary-l c-white">
+                <b><i class="el-icon-tickets c-white" style="vertical-align: baseline"></i></b>Cotizaciones
+            </el-menu-item>
+        </inertia-link>
         </el-submenu>
       </el-menu>
     </el-aside>

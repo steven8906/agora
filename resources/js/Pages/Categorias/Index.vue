@@ -13,9 +13,14 @@
                     <el-table v-if="dataCategorias.length > 0"
                               :data="displayData"
                               style="width: 100%">
+                        <el-table-column label="Estatus" prop="condicion">
+                            <template #default="scope">
+                                <el-tag type="success" v-if="scope.row.condicion == 1" effect="dark">Activo</el-tag>
+                                <el-tag type="danger" effect="dark" v-else>Inactivo</el-tag>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="Categoría" prop="nombre"></el-table-column>
                         <el-table-column label="Descripción" prop="descripcion"></el-table-column>
-                        <el-table-column label="Estatus" prop="condicion"></el-table-column>
                         <el-table-column align="right">
                             <template #header>
                                 <el-input v-model="search" size="mini" placeholder="Buscar..."/>
@@ -60,7 +65,9 @@
         </el-row>
         <!--        Tabla y paginacion-->
         <el-dialog title="Formulario de Categorías" v-model="modalForm" width="30%">
-            <el-input placeholder="Categoría" v-model="model.nombre" clearable></el-input>
+            <el-input placeholder="Categoría" v-model="model.nombre" clearable
+                      :rules="[{required:true, message:'Campo obligatorio'}, {type:'number', message: 'Ingrese una categoría válida'}]">
+            </el-input>
             <br>
             <br>
             <el-input type="textarea" :rows="2" placeholder="Descripción" v-model="model.descripcion" clearable></el-input>
@@ -126,6 +133,11 @@
                 let url = this.model.hasOwnProperty('id') ? 'categorias.update' : 'categorias.store';
                 axios.post(route(url), this.model)
                     .then((res) => {
+                        this.$notify({
+                            title: 'Transacción exitosa',
+                            message: 'Solicitud realizada con éxito',
+                            type: 'success'
+                        });
                         this.dataCategorias = res.data.info;
                         this.errores = null;
                         this.modalForm = false;
@@ -158,9 +170,7 @@
             },
             //bloque obligatorio para paginacion de tabla
             limpiarModelo(){
-                this.model.nombre = "";
-                this.model.descripcion = "";
-                delete this.model.id;
+                this.model = {};
             }
         }
     }

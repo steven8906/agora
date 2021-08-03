@@ -2,39 +2,67 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Clientes;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class ClientesController extends Controller
 {
-    public function index(){
-        /*        $categorias = Categorias::all();
-                $usuario    = Auth::user();
-                return Inertia::render('Categorias/Index', compact('categorias', 'usuario'));*/
-        return "Hola soy index de ClientesController";
+    public function index()
+    {
+        $clientes = Clientes::all();
+        $usuario  = Auth::user();
+        return Inertia::render('Clientes/Index', compact('clientes', 'usuario'));
     }
 
     public function store(Request $request)
     {
-        /*        $reglas = array(
-                    'nombre' => 'required',
-                );
+        $reglas = array(
+            'cliente' => 'required',
+            'contacto' => 'required',
+            'rfc' => 'required',
+            'direccion' => 'required',
+            'telefono_oficina' => 'required',
+            'email' => 'required | email | unique:clientes',
+        );
 
-                $mensaje = array('required' => 'El campo :attribute, es obligatorio');
-                $request->validate($reglas, $mensaje);
-                Categorias::create($request->only('nombre', 'descripcion'));
-                return response()->json(array('success' => true, 'info' => Categorias::all()));*/
+        $mensaje = array(
+            'required' => 'El campo :attribute, es obligatorio',
+            'email' => 'El :attribute debe ser una dirección de correo valida',
+            'unique' => 'El :attribute esta repetido',
+        );
+        $request->validate($reglas, $mensaje);
+        Clientes::create($request->only('cliente','contacto', 'rfc', 'direccion', 'telefono_oficina', 'telefono_movil', 'email'));
+        return response()->json(array('success' => true, 'info' => Clientes::all()));
     }
 
-    public function update(Request $request){
-        /*        $reglas = array(
-                    'id'      => 'required',
-                    'nombre'  => 'required',
-                );
+    public function update(Request $request)
+    {
+        $reglas = array(
+            'cliente' => 'required',
+            'contacto' => 'required',
+            'rfc' => 'required',
+            'direccion' => 'required',
+            'telefono_oficina' => 'required',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('clientes')->ignore($request->email,'email'),
+            ]
 
-                $mensaje = array('required' => 'El campo :attribute, es obligatorio');
-                $request->validate($reglas, $mensaje);
-                Categorias::where('id', $request->only('id'))->update($request->all());
-                return response()->json(array('success' => true, 'info' => Categorias::all()));*/
+        );
+
+        $mensaje = array(
+            'required' => 'El campo :attribute, es obligatorio',
+            'email' => 'El :attribute debe ser una dirección de correo valida',
+            'unique' => 'El :attribute esta repetido',
+        );
+        $request->validate($reglas, $mensaje);
+
+
+        Clientes::where('id', $request->only('id'))->update($request->all());
+        return response()->json(array('success' => true, 'info' => Clientes::all()));
     }
 }

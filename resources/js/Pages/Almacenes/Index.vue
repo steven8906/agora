@@ -1,8 +1,8 @@
 <template>
     <app-main selected="1" titulo="Almacénes" :usuario="usuario">
         <el-button-group>
-            <el-button type="primary" icon="el-icon-edit" @click="modalForm = true"></el-button>
-            <el-button type="primary" icon="el-icon-paperclip"></el-button>
+            <el-button type="primary" icon="el-icon-circle-plus-outline" @click="modalForm = true"></el-button>
+<!--            <el-button type="primary" icon="el-icon-paperclip"></el-button>-->
         </el-button-group>
         <!--        Tabla y paginacion-->
         <br>
@@ -13,6 +13,12 @@
                     <el-table v-if="dataAlmacenes.length > 0"
                         :data="displayData"
                         style="width: 100%">
+                        <el-table-column label="Estatus" prop="condicion">
+                            <template #default="scope">
+                                <el-tag type="success" v-if="scope.row.condicion == 1" effect="dark">Activo</el-tag>
+                                <el-tag type="danger" effect="dark" v-else>Inactivo</el-tag>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="Almacén" prop="almacen">
                         </el-table-column>
                         <el-table-column label="Descripción" prop="descripcion">
@@ -127,6 +133,11 @@
                 let url = this.model.hasOwnProperty('id') ? 'almacenes.update' : 'almacenes.store';
                 axios.post(route(url), this.model)
                     .then((res) => {
+                        this.$notify({
+                            title: 'Transacción exitosa',
+                            message: 'Solicitud realizada con éxito',
+                            type: 'success'
+                        });
                         this.dataAlmacenes = res.data.info;
                         this.errores = null;
                         this.modalForm = false;
@@ -151,7 +162,28 @@
                 this.model.id = model.id;
             },
             desactivar(row) {
-                console.log(row.id);
+                this.loading = true
+                axios.post(route('almacenes.disable'), {id: row.id, condicion: row.condicion})
+                    .then((res) => {
+                        this.$notify({
+                            title: 'Transacción exitosa',
+                            message: 'Solicitud realizada con éxito',
+                            type: 'success'
+                        });
+                        this.dataAlmacenes = res.data.almacenes;
+                    })
+                    .catch((error) => {
+                        this.$notify({
+                            title: 'Transacción exitosa',
+                            message: error.response.data.errors,
+                            type: 'danger'
+                        });
+                    })
+                    .finally(() =>
+                        setTimeout(() => {
+                            this.loading = false
+                        }, 1000)
+                    );
             },
             //bloque obligatorio para paginacion de tabla
             handleCurrentChange(val) {
